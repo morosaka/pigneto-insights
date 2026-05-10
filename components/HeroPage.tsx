@@ -61,7 +61,7 @@ export function HeroPage({
 
       {/* Content block */}
       <div style={{
-        position: 'absolute', bottom: 64, left: 20, right: 20,
+        position: 'absolute', bottom: 'calc(64px + env(safe-area-inset-bottom, 0px))', left: 20, right: 20,
         display: 'flex', flexDirection: 'column', gap: 10,
       }}>
         {/* Eyebrow: line + category label */}

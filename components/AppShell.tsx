@@ -63,13 +63,16 @@ export function AppShell(props: Props) {
   ];
 
   return (
-    <div style={{ width: '100vw', height: '100svh', overflow: 'hidden', position: 'relative' }}>
-      {/* Settings trigger — ⋯ top-right */}
+    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}>
+      {/* Settings trigger — ⋯ top-right, above safe area */}
       <button
         onClick={() => setShowSettings(true)}
         aria-label="Settings"
         style={{
-          position: 'absolute', top: 12, right: 16, zIndex: 80,
+          position: 'absolute',
+          top: 'calc(12px + env(safe-area-inset-top, 0px))',
+          right: 16,
+          zIndex: 80,
           fontFamily: 'var(--font-dm-sans), system-ui, sans-serif',
           fontSize: 20, lineHeight: 1,
           color: 'rgba(255,255,255,0.3)',

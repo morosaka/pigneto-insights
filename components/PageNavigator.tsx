@@ -21,7 +21,7 @@ export function PageNavigator({ activeTab, totalTabs }: Props) {
     <div
       style={{
         position: 'absolute',
-        bottom: 24,
+        bottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
         left: 0,
         right: 0,
         display: 'flex',
