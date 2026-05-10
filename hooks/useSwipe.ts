@@ -2,6 +2,11 @@ import { useRef, useCallback } from 'react';
 
 export type SwipeDirection = 'up' | 'down' | 'left' | 'right';
 
+function getPoint(e: TouchEvent | MouseEvent): { x: number; y: number } {
+  if ('touches' in e) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY };
+}
+
 interface SwipeOptions {
   onSwipe: (direction: SwipeDirection) => void;
   onDrag?: (dx: number, dy: number) => void;
@@ -26,11 +31,6 @@ export function useSwipe(options: SwipeOptions) {
     axis: null as 'h' | 'v' | null,
     active: false,
   });
-
-  const getPoint = (e: TouchEvent | MouseEvent) => {
-    if ('touches' in e) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY };
-  };
 
   const onStart = useCallback((e: TouchEvent | MouseEvent) => {
     const { x, y } = getPoint(e);
@@ -86,5 +86,10 @@ export function useSwipe(options: SwipeOptions) {
     }
   }, [onSwipe, onRelease, threshold, velocityThreshold]);
 
-  return { onStart, onMove, onEnd };
+  const onCancel = useCallback(() => {
+    state.current.active = false;
+    state.current.axis = null;
+  }, []);
+
+  return { onStart, onMove, onEnd, onCancel };
 }
