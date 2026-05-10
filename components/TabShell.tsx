@@ -13,6 +13,7 @@ export function TabShell({ tabs, initialTab = 0, onTabChange }: Props) {
   const [active, setActive] = useState(initialTab);
   const [dragX, setDragX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const isMouseDown = useRef(false);
 
   const switchTab = useCallback((newIndex: number) => {
     if (newIndex < 0 || newIndex >= tabs.length) return;
@@ -37,6 +38,7 @@ export function TabShell({ tabs, initialTab = 0, onTabChange }: Props) {
 
   const handleCancel = useCallback(() => {
     onCancel();
+    isMouseDown.current = false;
     setIsDragging(false);
     setDragX(0);
   }, [onCancel]);
@@ -48,10 +50,10 @@ export function TabShell({ tabs, initialTab = 0, onTabChange }: Props) {
       onTouchMove={e => onMove(e.nativeEvent)}
       onTouchEnd={e => onEnd(e.nativeEvent)}
       onTouchCancel={handleCancel}
-      onMouseDown={e => onStart(e.nativeEvent)}
-      onMouseMove={e => { if (isDragging) onMove(e.nativeEvent); }}
-      onMouseUp={e => onEnd(e.nativeEvent)}
-      onMouseLeave={handleCancel}
+      onMouseDown={e => { isMouseDown.current = true; onStart(e.nativeEvent); }}
+      onMouseMove={e => { if (isMouseDown.current) onMove(e.nativeEvent); }}
+      onMouseUp={e => { isMouseDown.current = false; onEnd(e.nativeEvent); }}
+      onMouseLeave={() => { if (isMouseDown.current) handleCancel(); }}
     >
       {tabs.map((tab, i) => {
         const offset = (i - active) * 100;

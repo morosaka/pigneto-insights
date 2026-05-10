@@ -11,6 +11,7 @@ export function VerticalDeck({ cards, onPullUp }: Props) {
   const [index, setIndex] = useState(0);
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const isMouseDown = useRef(false);
 
   const commit = useCallback((newIndex: number) => {
     if (newIndex < 0 || newIndex >= cards.length) return;
@@ -37,6 +38,7 @@ export function VerticalDeck({ cards, onPullUp }: Props) {
 
   const handleCancel = useCallback(() => {
     onCancel();
+    isMouseDown.current = false;
     setIsDragging(false);
     setDragY(0);
   }, [onCancel]);
@@ -48,10 +50,10 @@ export function VerticalDeck({ cards, onPullUp }: Props) {
       onTouchMove={e => onMove(e.nativeEvent)}
       onTouchEnd={e => onEnd(e.nativeEvent)}
       onTouchCancel={handleCancel}
-      onMouseDown={e => onStart(e.nativeEvent)}
-      onMouseMove={e => { if (isDragging) onMove(e.nativeEvent); }}
-      onMouseUp={e => onEnd(e.nativeEvent)}
-      onMouseLeave={handleCancel}
+      onMouseDown={e => { isMouseDown.current = true; onStart(e.nativeEvent); }}
+      onMouseMove={e => { if (isMouseDown.current) onMove(e.nativeEvent); }}
+      onMouseUp={e => { isMouseDown.current = false; onEnd(e.nativeEvent); }}
+      onMouseLeave={() => { if (isMouseDown.current) handleCancel(); }}
     >
       {cards.map((card, i) => {
         const offset = (i - index) * 100;
