@@ -13,7 +13,7 @@ export default function Page() {
         fontStyle: 'italic',
         fontWeight: 300,
         fontSize: 28,
-        color: 'hsl(37, 37%, 88%)',
+        color: 'var(--avorio)',
       }}>
         Pigneto Insights
       </p>
