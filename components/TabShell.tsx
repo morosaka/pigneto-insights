@@ -43,7 +43,7 @@ export function TabShell({ tabs, initialTab = 0, onTabChange }: Props) {
 
   return (
     <div
-      style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', cursor: isDragging ? 'grabbing' : 'grab' }}
+      style={{ position: 'absolute', inset: 0, overflow: 'hidden', cursor: isDragging ? 'grabbing' : 'grab' }}
       onTouchStart={e => onStart(e.nativeEvent)}
       onTouchMove={e => onMove(e.nativeEvent)}
       onTouchEnd={e => onEnd(e.nativeEvent)}

@@ -43,7 +43,7 @@ export function VerticalDeck({ cards, onPullUp }: Props) {
 
   return (
     <div
-      style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', cursor: isDragging ? 'grabbing' : 'ns-resize' }}
+      style={{ position: 'absolute', inset: 0, overflow: 'hidden', cursor: isDragging ? 'grabbing' : 'ns-resize' }}
       onTouchStart={e => onStart(e.nativeEvent)}
       onTouchMove={e => onMove(e.nativeEvent)}
       onTouchEnd={e => onEnd(e.nativeEvent)}
