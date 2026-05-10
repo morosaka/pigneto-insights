@@ -22,7 +22,7 @@ export function HeroPage({
   swipeHint = false,
 }: Props) {
   const bg = photoUrl
-    ? `url(${photoUrl}) center/cover no-repeat`
+    ? `url("${photoUrl}") center/cover no-repeat`
     : (gradient ?? 'linear-gradient(162deg, hsl(19,34%,10%) 0%, hsl(10,68%,22%) 45%, hsl(23,55%,40%) 100%)');
 
   return (
