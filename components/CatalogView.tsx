@@ -13,10 +13,11 @@ interface Props {
 export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
-  const [highlighted, setHighlighted] = useState<Place | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const listRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  // Index-based refs — stable even across re-renders
+  const itemEls = useRef<(HTMLButtonElement | null)[]>([]);
 
   const categories = useMemo(() => {
     const cats = Array.from(new Set(places.map(p => p.category)));
@@ -33,30 +34,30 @@ export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
     });
   }, [places, filter, search]);
 
-  // Reset selection and scroll when filter/search changes
+  // Reset to top when filter or search changes
   useEffect(() => {
-    setHighlighted(null);
-    itemRefs.current.clear();
+    setSelectedIndex(0);
+    itemEls.current = [];
     if (listRef.current) listRef.current.scrollTop = 0;
   }, [filter, search]);
 
-  // On scroll: the first item whose bottom edge is below the container top becomes selected
+  // On scroll: find the first item whose bottom edge is below scrollTop
   const handleScroll = useCallback(() => {
     const container = listRef.current;
-    if (!container || filtered.length === 0) return;
-    let total = 0;
-    for (const place of filtered) {
-      const el = itemRefs.current.get(place.id);
+    if (!container) return;
+    const scrollTop = container.scrollTop;
+    for (let i = 0; i < itemEls.current.length; i++) {
+      const el = itemEls.current[i];
       if (!el) continue;
-      total += el.offsetHeight;
-      if (total > container.scrollTop) {
-        setHighlighted(prev => prev?.id === place.id ? prev : place);
+      // offsetTop + offsetHeight = bottom edge of item relative to container
+      if (el.offsetTop + el.offsetHeight > scrollTop) {
+        setSelectedIndex(i);
         return;
       }
     }
-  }, [filtered]);
+  }, []);
 
-  const displayed = highlighted ?? filtered[0] ?? null;
+  const displayed = filtered[selectedIndex] ?? filtered[0] ?? null;
 
   return (
     <div style={{
@@ -191,8 +192,8 @@ export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
                 Try removing a filter.
               </p>
             </div>
-          ) : filtered.map(place => {
-            const isSelected = (highlighted ?? filtered[0])?.id === place.id;
+          ) : filtered.map((place, i) => {
+            const isSelected = i === selectedIndex;
             const tier = priceTierLabel(place.price_tier);
             const meta = [place.category, tier, place.walk_minutes != null ? `${place.walk_minutes} min` : null]
               .filter(Boolean).join(' · ');
@@ -200,11 +201,8 @@ export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
             return (
               <button
                 key={place.id}
-                ref={el => {
-                  if (el) itemRefs.current.set(place.id, el);
-                  else itemRefs.current.delete(place.id);
-                }}
-                onClick={() => { setHighlighted(place); onSelect(place); }}
+                ref={el => { itemEls.current[i] = el; }}
+                onClick={() => { setSelectedIndex(i); onSelect(place); }}
                 style={{
                   width: '100%', textAlign: 'left',
                   padding: '10px 12px',
