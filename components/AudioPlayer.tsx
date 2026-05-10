@@ -5,7 +5,7 @@ function barHeights(title: string, count = 16): number[] {
   let seed = Array.from(title).reduce((acc, c) => acc + c.charCodeAt(0), 0);
   return Array.from({ length: count }, () => {
     seed = (seed * 1664525 + 1013904223) & 0xffffffff;
-    return 30 + (Math.abs(seed) % 55); // 30–85%
+    return 30 + (Math.abs(seed) % 56); // 30–85%
   });
 }
 

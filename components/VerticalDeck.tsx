@@ -45,7 +45,7 @@ export function VerticalDeck({ cards, onPullUp }: Props) {
       {cards.map((card, i) => {
         const offset = (i - index) * 100; // % of height
         const drag = i === index ? dragY : 0;
-        const translateY = `calc(${offset}% + ${drag * 1}px)`;
+        const translateY = `calc(${offset}% + ${drag}px)`;
 
         return (
           <div

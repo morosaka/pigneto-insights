@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback, ReactNode } from 'react';
+import { useState, useCallback, useRef, ReactNode } from 'react';
 import { useSwipe } from '@/hooks/useSwipe';
 import { PageNavigator } from './PageNavigator';
 
@@ -13,13 +13,15 @@ export function TabShell({ tabs, initialTab = 0, onTabChange }: Props) {
   const [active, setActive] = useState(initialTab);
   const [dragX, setDragX] = useState(0);
   const [animating, setAnimating] = useState(false);
+  const animTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const switchTab = useCallback((newIndex: number) => {
     if (newIndex < 0 || newIndex >= tabs.length) return;
+    if (animTimerRef.current) clearTimeout(animTimerRef.current);
     setAnimating(true);
     setActive(newIndex);
     setDragX(0);
-    setTimeout(() => setAnimating(false), 400);
+    animTimerRef.current = setTimeout(() => setAnimating(false), 400);
     onTabChange?.(newIndex);
   }, [tabs.length, onTabChange]);
 
