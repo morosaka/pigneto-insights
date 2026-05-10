@@ -164,7 +164,7 @@ export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
           ) : filtered.map(place => {
             const isSelected = preview?.id === place.id || (!preview && filtered[0]?.id === place.id);
             const tier = priceTierLabel(place.price_tier);
-            const meta = [place.category, tier, place.walk_minutes ? `${place.walk_minutes} min` : null]
+            const meta = [place.category, tier, place.walk_minutes != null ? `${place.walk_minutes} min` : null]
               .filter(Boolean).join(' · ');
 
             return (
