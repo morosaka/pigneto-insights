@@ -41,16 +41,16 @@ export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
     if (listRef.current) listRef.current.scrollTop = 0;
   }, [filter, search]);
 
-  // On scroll: find the first item whose bottom edge is below scrollTop
+  // On scroll: first item whose bottom edge is below the container top = topmost visible row
   const handleScroll = useCallback(() => {
     const container = listRef.current;
     if (!container) return;
-    const scrollTop = container.scrollTop;
+    // getBoundingClientRect uses viewport coords — no offsetParent issues
+    const containerTop = container.getBoundingClientRect().top;
     for (let i = 0; i < itemEls.current.length; i++) {
       const el = itemEls.current[i];
       if (!el) continue;
-      // offsetTop + offsetHeight = bottom edge of item relative to container
-      if (el.offsetTop + el.offsetHeight > scrollTop) {
+      if (el.getBoundingClientRect().bottom > containerTop) {
         setSelectedIndex(i);
         return;
       }
