@@ -37,8 +37,8 @@ export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
       width: '100%', height: '100%',
       display: 'flex', background: 'var(--avorio)',
     }}>
-      {/* LEFT COLUMN — 38% */}
-      <div style={{ width: '38%', position: 'relative', flexShrink: 0, overflow: 'hidden' }}>
+      {/* LEFT COLUMN — 60% */}
+      <div style={{ width: '60%', position: 'relative', flexShrink: 0, overflow: 'hidden' }}>
         {displayed?.cover_url ? (
           <img
             src={displayed.cover_url}

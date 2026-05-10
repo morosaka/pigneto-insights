@@ -27,8 +27,8 @@ html, body { height: 100%; overflow: hidden; }
 
 body {
   font-family: var(--font-sans);
-  /* Warm dark — matches HeroPage gradient, visible if safe-area bleeds through */
-  background: hsl(19, 34%, 10%);
+  /* Avorio — visible in safe areas (status bar + home indicator) */
+  background: var(--avorio);
   color: var(--ciocco);
   -webkit-font-smoothing: antialiased;
 }

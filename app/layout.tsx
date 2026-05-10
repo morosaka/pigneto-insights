@@ -22,13 +22,12 @@ export const metadata: Metadata = {
   description: 'A neighborhood guide for guests in Pigneto, Rome.',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'default',
     title: 'Pigneto',
   },
-  // Explicit meta tags — belt-and-suspenders for iOS PWA
   other: {
     'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'black-translucent',
+    'apple-mobile-web-app-status-bar-style': 'default',
     'apple-mobile-web-app-title': 'Pigneto',
     'mobile-web-app-capable': 'yes',
   },
@@ -39,7 +38,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#4F3826',
+  themeColor: '#EDE5D5',
   viewportFit: 'cover',
 };
 
