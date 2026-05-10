@@ -30,6 +30,7 @@ export interface NewsItem {
   external_url: string | null;
   category: string | null;
   featured: boolean;
+  active: boolean;
 }
 
 export interface Story {
@@ -51,6 +52,8 @@ export interface EvergreenItem {
   body_md: string | null;
   tags: string[];
   source_notebook: string | null;
+  active: boolean;
+  published_week: string | null;
 }
 
 export interface HomeFeatured {

@@ -29,7 +29,10 @@ export async function getPlace(id: string): Promise<Place | null> {
     .select('*')
     .eq('id', id)
     .single();
-  if (error) return null;
+  if (error) {
+    if (error.code === 'PGRST116') return null; // not found
+    throw error;
+  }
   return data as Place;
 }
 
