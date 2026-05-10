@@ -146,7 +146,7 @@ export function DiscoverTab({ stories, news, evergreen }: Props) {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       {picker}
-      <VerticalDeck cards={cards} />
+      <VerticalDeck key={section} cards={cards} />
     </div>
   );
 }
