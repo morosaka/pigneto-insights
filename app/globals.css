@@ -33,3 +33,11 @@ body {
 }
 
 .no-select { user-select: none; -webkit-user-select: none; }
+
+/* Safe area insets for iOS notch + home indicator */
+@supports (padding-top: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

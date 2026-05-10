@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { AppShell } from '@/components/AppShell';
 import { supabase } from '@/lib/supabase';
 import { getCoverPlaces, getAllPlaces, getActiveNews, getStories, getEvergreen } from '@/lib/api';

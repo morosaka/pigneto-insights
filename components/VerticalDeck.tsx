@@ -10,15 +10,11 @@ interface Props {
 export function VerticalDeck({ cards, onPullUp }: Props) {
   const [index, setIndex] = useState(0);
   const [dragY, setDragY] = useState(0);
-  const [animating, setAnimating] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const commit = useCallback((newIndex: number) => {
     if (newIndex < 0 || newIndex >= cards.length) return;
-    setAnimating(true);
     setIndex(newIndex);
-    setDragY(0);
-    setTimeout(() => setAnimating(false), 400);
   }, [cards.length]);
 
   const { onStart, onMove, onEnd, onCancel } = useSwipe({
@@ -29,22 +25,37 @@ export function VerticalDeck({ cards, onPullUp }: Props) {
       }
       if (dir === 'down') commit(index - 1);
     },
-    onDrag(_dx, dy) { setDragY(dy); },
-    onRelease() { setDragY(0); },
+    onDrag(_dx, dy) {
+      setIsDragging(true);
+      setDragY(dy);
+    },
+    onRelease() {
+      setIsDragging(false);
+      setDragY(0);
+    },
   });
+
+  const handleCancel = useCallback(() => {
+    onCancel();
+    setIsDragging(false);
+    setDragY(0);
+  }, [onCancel]);
 
   return (
     <div
-      ref={containerRef}
-      style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }}
+      style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', cursor: isDragging ? 'grabbing' : 'ns-resize' }}
       onTouchStart={e => onStart(e.nativeEvent)}
       onTouchMove={e => onMove(e.nativeEvent)}
       onTouchEnd={e => onEnd(e.nativeEvent)}
-      onTouchCancel={() => onCancel()}
+      onTouchCancel={handleCancel}
+      onMouseDown={e => onStart(e.nativeEvent)}
+      onMouseMove={e => { if (isDragging) onMove(e.nativeEvent); }}
+      onMouseUp={e => onEnd(e.nativeEvent)}
+      onMouseLeave={handleCancel}
     >
       {cards.map((card, i) => {
-        const offset = (i - index) * 100; // % of height
-        const drag = i === index ? dragY : 0;
+        const offset = (i - index) * 100;
+        const drag = isDragging && i === index ? dragY : 0;
         const translateY = `calc(${offset}% + ${drag}px)`;
 
         return (
@@ -54,9 +65,7 @@ export function VerticalDeck({ cards, onPullUp }: Props) {
               position: 'absolute',
               inset: 0,
               transform: `translateY(${translateY})`,
-              transition: animating && dragY === 0
-                ? `transform var(--anim-duration) var(--anim-ease)`
-                : 'none',
+              transition: isDragging ? 'none' : `transform var(--anim-duration) var(--anim-ease)`,
               willChange: 'transform',
             }}
           >

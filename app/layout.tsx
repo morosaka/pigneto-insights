@@ -20,6 +20,11 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: 'Pigneto Insights',
   description: 'A neighborhood guide for guests in Pigneto, Rome.',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Pigneto',
+  },
 };
 
 export const viewport: Viewport = {
@@ -28,6 +33,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: '#4F3826',
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
