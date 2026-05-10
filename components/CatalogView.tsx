@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import type { Place } from '@/lib/types';
 import { priceTierLabel } from '@/lib/types';
 
@@ -13,7 +13,10 @@ interface Props {
 export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
-  const [preview, setPreview] = useState<Place | null>(null);
+  const [highlighted, setHighlighted] = useState<Place | null>(null);
+
+  const listRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   const categories = useMemo(() => {
     const cats = Array.from(new Set(places.map(p => p.category)));
@@ -30,7 +33,30 @@ export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
     });
   }, [places, filter, search]);
 
-  const displayed = preview ?? filtered[0] ?? null;
+  // Reset selection and scroll when filter/search changes
+  useEffect(() => {
+    setHighlighted(null);
+    itemRefs.current.clear();
+    if (listRef.current) listRef.current.scrollTop = 0;
+  }, [filter, search]);
+
+  // On scroll: the first item whose bottom edge is below the container top becomes selected
+  const handleScroll = useCallback(() => {
+    const container = listRef.current;
+    if (!container || filtered.length === 0) return;
+    let total = 0;
+    for (const place of filtered) {
+      const el = itemRefs.current.get(place.id);
+      if (!el) continue;
+      total += el.offsetHeight;
+      if (total > container.scrollTop) {
+        setHighlighted(prev => prev?.id === place.id ? prev : place);
+        return;
+      }
+    }
+  }, [filtered]);
+
+  const displayed = highlighted ?? filtered[0] ?? null;
 
   return (
     <div style={{
@@ -140,8 +166,12 @@ export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
           ))}
         </div>
 
-        {/* List */}
-        <div style={{ flex: 1, overflowY: 'auto' }}>
+        {/* List — scroll drives left-column selection */}
+        <div
+          ref={listRef}
+          style={{ flex: 1, overflowY: 'auto' }}
+          onScroll={handleScroll}
+        >
           {filtered.length === 0 ? (
             <div style={{
               display: 'flex', flexDirection: 'column',
@@ -162,7 +192,7 @@ export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
               </p>
             </div>
           ) : filtered.map(place => {
-            const isSelected = preview?.id === place.id || (!preview && filtered[0]?.id === place.id);
+            const isSelected = (highlighted ?? filtered[0])?.id === place.id;
             const tier = priceTierLabel(place.price_tier);
             const meta = [place.category, tier, place.walk_minutes != null ? `${place.walk_minutes} min` : null]
               .filter(Boolean).join(' · ');
@@ -170,7 +200,11 @@ export function CatalogView({ places, tabLabel, onSelect, onBack }: Props) {
             return (
               <button
                 key={place.id}
-                onClick={() => { setPreview(place); onSelect(place); }}
+                ref={el => {
+                  if (el) itemRefs.current.set(place.id, el);
+                  else itemRefs.current.delete(place.id);
+                }}
+                onClick={() => { setHighlighted(place); onSelect(place); }}
                 style={{
                   width: '100%', textAlign: 'left',
                   padding: '10px 12px',
