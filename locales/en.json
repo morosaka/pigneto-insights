@@ -1,0 +1,56 @@
+{
+  "tabs": {
+    "home": "Home",
+    "eat-drink": "Eat & Drink",
+    "essentials": "Essentials",
+    "discover": "Discover"
+  },
+  "discover": {
+    "news": "News & Events",
+    "stories": "Rome Stories",
+    "evergreen": "Rome Evergreen"
+  },
+  "categories": {
+    "Trattoria": "Trattoria",
+    "Wine bar": "Wine bar",
+    "Café": "Café",
+    "Pizzeria": "Pizzeria",
+    "Gelateria": "Gelateria",
+    "Bistro": "Bistro",
+    "Brewery": "Brewery",
+    "Seafood": "Seafood",
+    "Steakhouse": "Steakhouse",
+    "Club": "Club",
+    "Market": "Market",
+    "Grocery": "Grocery",
+    "Pharmacy": "Pharmacy",
+    "Transit": "Transit",
+    "Laundry": "Laundry",
+    "Parking": "Parking"
+  },
+  "ui": {
+    "skip": "Skip",
+    "begin": "Begin",
+    "back": "Back",
+    "open-in-maps": "Open in Maps",
+    "listen": "Listen",
+    "read-more": "Read more",
+    "walk-minutes": "{n} min walk",
+    "audio-minutes": "{n} min",
+    "featured": "Featured",
+    "this-week": "This week",
+    "from-evergreen": "From Rome Evergreen",
+    "filter-all": "All",
+    "search-placeholder": "Search by name or type…",
+    "empty-catalog": "Nothing here yet.",
+    "empty-catalog-hint": "Try removing a filter.",
+    "settings-title": "Settings",
+    "replay-onboarding": "Replay onboarding",
+    "about": "About this app",
+    "swipe-up-hint": "Swipe up to flip through stories.",
+    "swipe-side-hint": "Swipe sideways to change category.",
+    "pull-up-hint": "Pull up to see the full list.",
+    "about-text": "Pigneto Insights — A neighborhood guide curated by Mauro.",
+    "app-version": "v1.0"
+  }
+}
