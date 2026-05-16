@@ -30,9 +30,9 @@ function PlaceRow({ place, onTap }: { place: Place; onTap: () => void }) {
     >
       <div
         style={{
-          width: 58, height: 68, borderRadius: 9,
+          width: 76, height: 90, borderRadius: 10,
           flexShrink: 0, overflow: 'hidden',
-          marginRight: 12, background: 'var(--avorio-dim)',
+          marginRight: 14, background: 'var(--avorio-dim)',
         }}
       >
         {place.cover_url ? (
@@ -43,17 +43,17 @@ function PlaceRow({ place, onTap }: { place: Place; onTap: () => void }) {
         )}
       </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <div style={{ fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.11em', color: catColor(place.category), marginBottom: 3, fontFamily: 'var(--font-sans)' }}>
+        <div style={{ fontSize: 16, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.09em', color: catColor(place.category), marginBottom: 4, fontFamily: 'var(--font-sans)' }}>
           {place.category}{place.hours ? ` · ${place.hours}` : ''}
         </div>
-        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 16, color: 'var(--ciocco)', lineHeight: 1.2, marginBottom: 3 }}>
+        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 28, color: 'var(--ciocco)', lineHeight: 1.15, marginBottom: 4 }}>
           {place.name}
         </div>
-        <div style={{ fontSize: 10.5, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+        <div style={{ fontSize: 18, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
           {place.walk_minutes ? `${place.walk_minutes} min walk` : (place.address ?? '')}
         </div>
       </div>
-      <div style={{ fontSize: 14, color: 'var(--avorio-dim)', display: 'flex', alignItems: 'center', paddingLeft: 8 }}>›</div>
+      <div style={{ fontSize: 20, color: 'var(--avorio-dim)', display: 'flex', alignItems: 'center', paddingLeft: 8 }}>›</div>
     </button>
   );
 }

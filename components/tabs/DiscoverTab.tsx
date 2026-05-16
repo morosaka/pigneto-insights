@@ -61,12 +61,12 @@ function NewsRow({ item, onTap }: { item: NewsItem; onTap: () => void }) {
         WebkitTapHighlightColor: 'transparent',
       } as React.CSSProperties}
     >
-      <div style={{ width: 7, height: 7, borderRadius: '50%', flexShrink: 0, marginTop: 5, background: newsColor(item.category) }} />
+      <div style={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0, marginTop: 7, background: newsColor(item.category) }} />
       <div style={{ flex: 1 }}>
-        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 14.5, color: 'var(--ciocco)', lineHeight: 1.25, marginBottom: 2 }}>
+        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 25, color: 'var(--ciocco)', lineHeight: 1.2, marginBottom: 4 }}>
           {item.title}
         </div>
-        <div style={{ fontSize: 10, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+        <div style={{ fontSize: 18, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
           {formatDateRange(item.date_start, item.date_end)}
           {item.location ? ` · ${item.location}` : ''}
         </div>

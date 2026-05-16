@@ -48,7 +48,7 @@ function HorizontalPlaceCard({ place, onTap }: { place: Place; onTap: () => void
       onClick={onTap}
       style={{
         flexShrink: 0,
-        width: 108,
+        width: 160,
         background: 'white',
         borderRadius: 13,
         overflow: 'hidden',
@@ -60,7 +60,7 @@ function HorizontalPlaceCard({ place, onTap }: { place: Place; onTap: () => void
         WebkitTapHighlightColor: 'transparent',
       } as React.CSSProperties}
     >
-      <div style={{ height: 68, position: 'relative', overflow: 'hidden', background: 'var(--avorio-dim)' }}>
+      <div style={{ height: 100, position: 'relative', overflow: 'hidden', background: 'var(--avorio-dim)' }}>
         {place.cover_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={place.cover_url} alt={place.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -70,7 +70,7 @@ function HorizontalPlaceCard({ place, onTap }: { place: Place; onTap: () => void
         <span
           style={{
             position: 'absolute', bottom: 6, left: 7,
-            fontSize: 8, fontWeight: 500,
+            fontSize: 12, fontWeight: 500,
             textTransform: 'uppercase', letterSpacing: '0.07em',
             color: 'rgba(255,255,255,0.9)',
             textShadow: '0 1px 3px rgba(0,0,0,0.5)',
@@ -79,15 +79,15 @@ function HorizontalPlaceCard({ place, onTap }: { place: Place; onTap: () => void
           {place.category}
         </span>
       </div>
-      <div style={{ padding: '6px 8px 8px' }}>
+      <div style={{ padding: '8px 10px 10px' }}>
         <div
           style={{
             fontFamily: 'var(--font-serif)',
             fontStyle: 'italic',
-            fontSize: 13.5,
+            fontSize: 22,
             color: 'var(--ciocco)',
             lineHeight: 1.2,
-            marginBottom: 2,
+            marginBottom: 4,
             overflow: 'hidden',
             display: '-webkit-box',
             WebkitLineClamp: 2,
@@ -96,7 +96,7 @@ function HorizontalPlaceCard({ place, onTap }: { place: Place; onTap: () => void
         >
           {place.name}
         </div>
-        <div style={{ fontSize: 9.5, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+        <div style={{ fontSize: 16, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
           {[price, place.walk_minutes ? `${place.walk_minutes} min` : null].filter(Boolean).join(' · ')}
         </div>
       </div>
@@ -120,8 +120,8 @@ function NewsRow({ item, onTap }: { item: NewsItem; onTap: () => void }) {
     >
       <div
         style={{
-          width: 7, height: 7, borderRadius: '50%',
-          flexShrink: 0, marginTop: 5,
+          width: 10, height: 10, borderRadius: '50%',
+          flexShrink: 0, marginTop: 7,
           background: newsColor(item.category),
         }}
       />
@@ -129,13 +129,13 @@ function NewsRow({ item, onTap }: { item: NewsItem; onTap: () => void }) {
         <div
           style={{
             fontFamily: 'var(--font-serif)', fontStyle: 'italic',
-            fontSize: 14.5, color: 'var(--ciocco)',
-            lineHeight: 1.25, marginBottom: 2,
+            fontSize: 25, color: 'var(--ciocco)',
+            lineHeight: 1.2, marginBottom: 4,
           }}
         >
           {item.title}
         </div>
-        <div style={{ fontSize: 10, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+        <div style={{ fontSize: 18, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
           {formatDateRange(item.date_start, item.date_end)}
           {item.location ? ` · ${item.location}` : ''}
         </div>
