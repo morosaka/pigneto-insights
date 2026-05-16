@@ -1,6 +1,9 @@
 'use client';
+import { useState } from 'react';
 import type { Place, Story, NewsItem } from '@/lib/types';
 import { priceTierLabel } from '@/lib/types';
+import { PlaceDetail } from '@/components/PlaceDetail';
+import { StoryDetail } from '@/components/StoryDetail';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -35,10 +38,11 @@ function formatDateRange(start: string | null, end: string | null): string {
 
 // ── sub-components ────────────────────────────────────────────────────────────
 
-function HorizontalPlaceCard({ place }: { place: Place }) {
+function HorizontalPlaceCard({ place, onTap }: { place: Place; onTap: () => void }) {
   const price = priceTierLabel(place.price_tier);
   return (
-    <div
+    <button
+      onClick={onTap}
       style={{
         flexShrink: 0,
         width: 108,
@@ -46,7 +50,12 @@ function HorizontalPlaceCard({ place }: { place: Place }) {
         borderRadius: 13,
         overflow: 'hidden',
         boxShadow: 'var(--shadow-card)',
-      }}
+        padding: 0,
+        border: 'none',
+        cursor: 'pointer',
+        textAlign: 'left',
+        WebkitTapHighlightColor: 'transparent',
+      } as React.CSSProperties}
     >
       <div style={{ height: 68, position: 'relative', overflow: 'hidden', background: 'var(--avorio-dim)' }}>
         {place.cover_url ? (
@@ -88,7 +97,7 @@ function HorizontalPlaceCard({ place }: { place: Place }) {
           {[price, place.walk_minutes ? `${place.walk_minutes} min` : null].filter(Boolean).join(' · ')}
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -138,21 +147,26 @@ interface Props {
 }
 
 export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, onViewDiscover }: Props) {
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+
   const readingTime = featuredStory
     ? (featuredStory.audio_time_min ?? featuredStory.reading_time_min)
     : null;
 
   return (
-    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: 'var(--avorio)' }}>
+    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: 'var(--avorio)', position: 'relative' }}>
 
       {/* ── Hero ───────────────────────────────────────────── */}
       <div
+        onClick={() => featuredStory && setSelectedStory(featuredStory)}
         style={{
           minHeight: 280, position: 'relative', flexShrink: 0,
           display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
           padding: '1.4rem 1.3rem 1.2rem',
           paddingTop: 'calc(env(safe-area-inset-top, 0px) + 2.5rem)',
           background: 'linear-gradient(162deg, var(--ciocco) 0%, var(--pompei) 55%, hsl(20,50%,42%) 100%)',
+          cursor: featuredStory ? 'pointer' : 'default',
         }}
       >
         {/* grain */}
@@ -223,7 +237,7 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, 
               overflowX: 'auto', scrollbarWidth: 'none',
             } as React.CSSProperties}
           >
-            {eatDrinkPreview.map(p => <HorizontalPlaceCard key={p.id} place={p} />)}
+            {eatDrinkPreview.map(p => <HorizontalPlaceCard key={p.id} place={p} onTap={() => setSelectedPlace(p)} />)}
           </div>
         </>
       )}
@@ -256,6 +270,14 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, 
           </span>
         ))}
       </div>
+
+      {/* ── Overlays ───────────────────────────────────────── */}
+      {selectedPlace && (
+        <PlaceDetail place={selectedPlace} onClose={() => setSelectedPlace(null)} />
+      )}
+      {selectedStory && (
+        <StoryDetail story={selectedStory} onClose={() => setSelectedStory(null)} />
+      )}
 
     </div>
   );
