@@ -4,6 +4,7 @@ import type { Place, Story, NewsItem } from '@/lib/types';
 import { priceTierLabel } from '@/lib/types';
 import { PlaceDetail } from '@/components/PlaceDetail';
 import { StoryDetail } from '@/components/StoryDetail';
+import { NewsDetail } from '@/components/NewsDetail';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -101,14 +102,19 @@ function HorizontalPlaceCard({ place, onTap }: { place: Place; onTap: () => void
   );
 }
 
-function NewsRow({ item }: { item: NewsItem }) {
+function NewsRow({ item, onTap }: { item: NewsItem; onTap: () => void }) {
   return (
-    <div
+    <button
+      onClick={onTap}
       style={{
         display: 'flex', alignItems: 'flex-start', gap: 10,
-        padding: '10px 18px',
+        padding: '10px 18px', width: '100%',
         borderBottom: '1px solid var(--avorio-dim)',
-      }}
+        background: 'none', border: 'none',
+        borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--avorio-dim)',
+        cursor: 'pointer', textAlign: 'left',
+        WebkitTapHighlightColor: 'transparent',
+      } as React.CSSProperties}
     >
       <div
         style={{
@@ -132,7 +138,7 @@ function NewsRow({ item }: { item: NewsItem }) {
           {item.location ? ` · ${item.location}` : ''}
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -149,6 +155,7 @@ interface Props {
 export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, onViewDiscover }: Props) {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
 
   const readingTime = featuredStory
     ? (featuredStory.audio_time_min ?? featuredStory.reading_time_min)
@@ -248,7 +255,7 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, 
       {news.length > 0 && (
         <>
           <SectionHeader label="This Week" />
-          {news.slice(0, 3).map(item => <NewsRow key={item.id} item={item} />)}
+          {news.slice(0, 3).map(item => <NewsRow key={item.id} item={item} onTap={() => setSelectedNews(item)} />)}
         </>
       )}
 
@@ -277,6 +284,9 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, 
       )}
       {selectedStory && (
         <StoryDetail story={selectedStory} onClose={() => setSelectedStory(null)} />
+      )}
+      {selectedNews && (
+        <NewsDetail item={selectedNews} onClose={() => setSelectedNews(null)} />
       )}
 
     </div>

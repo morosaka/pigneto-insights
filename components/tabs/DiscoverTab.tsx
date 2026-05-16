@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import type { Story, NewsItem } from '@/lib/types';
 import { StoryDetail } from '@/components/StoryDetail';
+import { NewsDetail } from '@/components/NewsDetail';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -45,9 +46,19 @@ function SectionHeader({ label, color }: { label: string; color: string }) {
   );
 }
 
-function NewsRow({ item }: { item: NewsItem }) {
+function NewsRow({ item, onTap }: { item: NewsItem; onTap: () => void }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 18px', borderBottom: '1px solid var(--avorio-dim)' }}>
+    <button
+      onClick={onTap}
+      style={{
+        display: 'flex', alignItems: 'flex-start', gap: 10,
+        padding: '10px 18px', width: '100%',
+        background: 'none', border: 'none',
+        borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--avorio-dim)',
+        cursor: 'pointer', textAlign: 'left',
+        WebkitTapHighlightColor: 'transparent',
+      } as React.CSSProperties}
+    >
       <div style={{ width: 7, height: 7, borderRadius: '50%', flexShrink: 0, marginTop: 5, background: newsColor(item.category) }} />
       <div style={{ flex: 1 }}>
         <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 14.5, color: 'var(--ciocco)', lineHeight: 1.25, marginBottom: 2 }}>
@@ -58,7 +69,7 @@ function NewsRow({ item }: { item: NewsItem }) {
           {item.location ? ` · ${item.location}` : ''}
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -120,6 +131,7 @@ interface Props {
 
 export function DiscoverTab({ stories, news }: Props) {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: 'var(--avorio)', paddingTop: 'env(safe-area-inset-top, 0px)', position: 'relative' }}>
@@ -128,7 +140,7 @@ export function DiscoverTab({ stories, news }: Props) {
       {news.length > 0 && (
         <>
           <SectionHeader label="News & Events" color="var(--oliva)" />
-          {news.map(item => <NewsRow key={item.id} item={item} />)}
+          {news.map(item => <NewsRow key={item.id} item={item} onTap={() => setSelectedNews(item)} />)}
           <div style={{ height: 1, background: 'var(--avorio-dim)' }} />
         </>
       )}
@@ -152,9 +164,12 @@ export function DiscoverTab({ stories, news }: Props) {
         ))}
       </div>
 
-      {/* ── Story detail overlay ────────────────────────────── */}
+      {/* ── Detail overlays ─────────────────────────────────── */}
       {selectedStory && (
         <StoryDetail story={selectedStory} onClose={() => setSelectedStory(null)} />
+      )}
+      {selectedNews && (
+        <NewsDetail item={selectedNews} onClose={() => setSelectedNews(null)} />
       )}
     </div>
   );
