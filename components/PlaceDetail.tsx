@@ -127,7 +127,7 @@ export function PlaceDetail({ place, onClose }: Props) {
             }}
           >
             {place.category}{price ? ` · ${price}` : ''}
-            {place.walk_minutes ? ` · ${place.walk_minutes} min a piedi` : ''}
+            {place.walk_minutes ? ` · ${place.walk_minutes} min walk` : ''}
           </div>
           <h1
             style={{

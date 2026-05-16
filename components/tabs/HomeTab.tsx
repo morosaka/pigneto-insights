@@ -8,13 +8,13 @@ import { StoryDetail } from '@/components/StoryDetail';
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 const EVERGREEN_PILLS = [
-  { label: 'storia del quartiere', color: 'var(--oliva)' },
-  { label: 'trasporti Roma',       color: 'var(--ardesia)' },
-  { label: 'cucina romana',        color: 'var(--pompei)' },
-  { label: 'itinerari a piedi',    color: 'var(--oliva)' },
-  { label: 'mercati storici',      color: 'var(--ardesia)' },
-  { label: 'street art',           color: 'var(--pompei)' },
-  { label: 'parchi e giardini',    color: 'var(--oliva)' },
+  { label: 'neighbourhood history', color: 'var(--oliva)' },
+  { label: 'Rome transport',        color: 'var(--ardesia)' },
+  { label: 'Roman cuisine',         color: 'var(--pompei)' },
+  { label: 'walking routes',        color: 'var(--oliva)' },
+  { label: 'historic markets',      color: 'var(--ardesia)' },
+  { label: 'street art',            color: 'var(--pompei)' },
+  { label: 'parks & gardens',       color: 'var(--oliva)' },
 ];
 
 function newsColor(category: string | null): string {
@@ -28,7 +28,7 @@ function newsColor(category: string | null): string {
 
 function formatDateRange(start: string | null, end: string | null): string {
   if (!start) return '';
-  const months = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const s = start.split('-');
   const label = `${parseInt(s[2])} ${months[parseInt(s[1]) - 1]}`;
   if (!end || end === start) return label;
@@ -198,7 +198,7 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, 
               fontSize: 32, lineHeight: 1.08, color: 'var(--avorio)', marginBottom: 8,
             }}
           >
-            {featuredStory ? featuredStory.title : 'Benvenuto al Pigneto'}
+            {featuredStory ? featuredStory.title : 'Welcome to Pigneto'}
           </h1>
 
           {featuredStory?.summary && (
@@ -229,7 +229,7 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, 
       {/* ── Eat & Drink preview ────────────────────────────── */}
       {eatDrinkPreview.length > 0 && (
         <>
-          <SectionHeader label="Dove mangiare" action="vedi tutti →" onAction={onViewEatDrink} />
+          <SectionHeader label="Where to Eat" action="see all →" onAction={onViewEatDrink} />
           <div
             style={{
               display: 'flex', gap: 10,
@@ -247,7 +247,7 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, 
       {/* ── News ───────────────────────────────────────────── */}
       {news.length > 0 && (
         <>
-          <SectionHeader label="Questa settimana" />
+          <SectionHeader label="This Week" />
           {news.slice(0, 3).map(item => <NewsRow key={item.id} item={item} />)}
         </>
       )}
@@ -255,7 +255,7 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, 
       <Divider />
 
       {/* ── Roma Evergreen ─────────────────────────────────── */}
-      <SectionHeader label="Roma — da sapere" action="esplora →" onAction={onViewDiscover} />
+      <SectionHeader label="Rome — essentials" action="explore →" onAction={onViewDiscover} />
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 18px 28px' }}>
         {EVERGREEN_PILLS.map(pill => (
           <span

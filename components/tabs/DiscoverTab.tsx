@@ -6,15 +6,15 @@ import { StoryDetail } from '@/components/StoryDetail';
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 const EVERGREEN_PILLS = [
-  { label: 'storia del quartiere', color: 'var(--oliva)' },
-  { label: 'trasporti Roma',       color: 'var(--ardesia)' },
-  { label: 'cucina romana',        color: 'var(--pompei)' },
-  { label: 'itinerari a piedi',    color: 'var(--oliva)' },
-  { label: 'mercati storici',      color: 'var(--ardesia)' },
-  { label: 'street art',           color: 'var(--pompei)' },
-  { label: 'parchi e giardini',    color: 'var(--oliva)' },
-  { label: 'musei gratuiti',       color: 'var(--ardesia)' },
-  { label: 'cibo tipico',          color: 'var(--pompei)' },
+  { label: 'neighbourhood history', color: 'var(--oliva)' },
+  { label: 'Rome transport',        color: 'var(--ardesia)' },
+  { label: 'Roman cuisine',         color: 'var(--pompei)' },
+  { label: 'walking routes',        color: 'var(--oliva)' },
+  { label: 'historic markets',      color: 'var(--ardesia)' },
+  { label: 'street art',            color: 'var(--pompei)' },
+  { label: 'parks & gardens',       color: 'var(--oliva)' },
+  { label: 'free museums',          color: 'var(--ardesia)' },
+  { label: 'local food',            color: 'var(--pompei)' },
 ];
 
 function newsColor(category: string | null): string {
@@ -24,7 +24,7 @@ function newsColor(category: string | null): string {
 
 function formatDateRange(start: string | null, end: string | null): string {
   if (!start) return '';
-  const months = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const s = start.split('-');
   const label = `${parseInt(s[2])} ${months[parseInt(s[1]) - 1]}`;
   if (!end || end === start) return label;
@@ -142,8 +142,8 @@ export function DiscoverTab({ stories, news }: Props) {
         </>
       )}
 
-      {/* ── Roma Evergreen ─────────────────────────────────── */}
-      <SectionHeader label="Roma Evergreen" color="var(--ardesia)" />
+      {/* ── Rome Evergreen ─────────────────────────────────── */}
+      <SectionHeader label="Rome Evergreen" color="var(--ardesia)" />
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 18px 28px' }}>
         {EVERGREEN_PILLS.map(pill => (
           <span key={pill.label} style={{ fontSize: 10.5, padding: '4px 12px', borderRadius: 20, border: `1px solid ${pill.color}`, color: pill.color, fontFamily: 'var(--font-sans)' }}>

@@ -50,7 +50,7 @@ function PlaceRow({ place, onTap }: { place: Place; onTap: () => void }) {
           {place.name}
         </div>
         <div style={{ fontSize: 10.5, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
-          {place.walk_minutes ? `${place.walk_minutes} min a piedi` : (place.address ?? '')}
+          {place.walk_minutes ? `${place.walk_minutes} min walk` : (place.address ?? '')}
         </div>
       </div>
       <div style={{ fontSize: 14, color: 'var(--avorio-dim)', display: 'flex', alignItems: 'center', paddingLeft: 8 }}>›</div>
@@ -81,7 +81,7 @@ export function EssentialsTab({ places }: Props) {
           Pigneto Insights
         </div>
         <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 22, color: 'var(--avorio)', lineHeight: 1.1 }}>
-          Nel Quartiere
+          The Neighbourhood
         </div>
       </div>
 

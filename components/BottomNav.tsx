@@ -2,9 +2,9 @@
 
 const TABS = [
   { glyph: '⌂', label: 'Home' },
-  { glyph: '♨', label: 'Cibo' },
-  { glyph: '◎', label: 'Quartiere' },
-  { glyph: '✦', label: 'Scopri' },
+  { glyph: '♨', label: 'Eat & Drink' },
+  { glyph: '◎', label: 'Essentials' },
+  { glyph: '✦', label: 'Discover' },
 ];
 
 interface Props {

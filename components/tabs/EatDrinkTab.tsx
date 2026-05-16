@@ -63,7 +63,7 @@ function PlaceRow({ place, onTap }: { place: Place; onTap: () => void }) {
           {place.name}
         </div>
         <div style={{ fontSize: 10.5, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
-          {place.walk_minutes ? `${place.walk_minutes} min a piedi` : (place.address ?? '')}
+          {place.walk_minutes ? `${place.walk_minutes} min walk` : (place.address ?? '')}
         </div>
       </div>
       <div style={{ fontSize: 14, color: 'var(--avorio-dim)', display: 'flex', alignItems: 'center', paddingLeft: 8 }}>›</div>
@@ -99,7 +99,7 @@ export function EatDrinkTab({ places }: Props) {
 
       {/* ── Filter chips ───────────────────────────────────── */}
       <div style={{ display: 'flex', gap: 8, padding: '12px 18px 8px', overflowX: 'auto', scrollbarWidth: 'none', flexShrink: 0 } as React.CSSProperties}>
-        <FilterChip label="Tutti" active={activeCategory === null} onClick={() => setActiveCategory(null)} />
+        <FilterChip label="All" active={activeCategory === null} onClick={() => setActiveCategory(null)} />
         {categories.map(cat => (
           <FilterChip key={cat} label={cat} active={activeCategory === cat} onClick={() => setActiveCategory(cat)} />
         ))}
