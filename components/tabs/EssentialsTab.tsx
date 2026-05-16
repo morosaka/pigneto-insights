@@ -1,85 +1,106 @@
 'use client';
 import { useState } from 'react';
 import type { Place } from '@/lib/types';
-import { VerticalDeck } from '../VerticalDeck';
-import { HeroPage } from '../HeroPage';
-import { CatalogView } from '../CatalogView';
-import { DetailPage } from '../DetailPage';
+import { PlaceDetail } from '@/components/PlaceDetail';
 
-const CATEGORY_GRADIENTS: Record<string, string> = {
-  'Transit':         'linear-gradient(152deg, hsl(206,47%,10%), hsl(206,44%,22%), hsl(206,40%,34%))',
-  'Pharmacy':        'linear-gradient(155deg, hsl(111,41%,10%), hsl(111,38%,20%), hsl(111,34%,32%))',
-  'Market':          'linear-gradient(150deg, hsl(111,41%,10%), hsl(111,38%,22%), hsl(111,34%,34%))',
-  'Grocery':         'linear-gradient(150deg, hsl(111,41%,10%), hsl(111,38%,22%), hsl(111,34%,34%))',
-  'Laundry':         'linear-gradient(158deg, hsl(19,34%,10%), hsl(19,28%,18%), hsl(206,40%,28%))',
-  'Parking':         'linear-gradient(162deg, hsl(19,34%,10%), hsl(19,30%,20%), hsl(19,25%,28%))',
-  'Rental':          'linear-gradient(155deg, hsl(23,55%,12%), hsl(10,60%,22%), hsl(23,50%,34%))',
-  'Luggage Storage': 'linear-gradient(158deg, hsl(206,47%,10%), hsl(206,40%,20%), hsl(19,34%,26%))',
+const CAT_COLOR: Record<string, string> = {
+  'Grocery':    'var(--oliva)',
+  'Market':     'var(--oliva)',
+  'Pharmacy':   'var(--ardesia)',
+  'Transport':  'var(--ardesia)',
+  'Laundry':    'var(--ardesia)',
+  'Tabacchi':   'var(--ciocco)',
+  'ATM':        'var(--ciocco)',
+  'Health':     'var(--ardesia)',
 };
-const DEFAULT_GRADIENT = 'linear-gradient(155deg, hsl(206,47%,10%), hsl(206,44%,22%), hsl(19,34%,28%))';
+function catColor(cat: string) { return CAT_COLOR[cat] ?? 'var(--oliva)'; }
 
-type View = 'cover' | 'catalog' | 'detail';
-
-interface Props {
-  coverPlaces: Place[];
-  allPlaces: Place[];
+function PlaceRow({ place, onTap }: { place: Place; onTap: () => void }) {
+  return (
+    <button
+      onClick={onTap}
+      style={{
+        display: 'flex', alignItems: 'stretch', width: '100%',
+        padding: '12px 0',
+        background: 'none', border: 'none',
+        borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--avorio-dim)',
+        cursor: 'pointer', textAlign: 'left',
+        WebkitTapHighlightColor: 'transparent',
+      } as React.CSSProperties}
+    >
+      <div
+        style={{
+          width: 58, height: 68, borderRadius: 9,
+          flexShrink: 0, overflow: 'hidden',
+          marginRight: 12, background: 'var(--avorio-dim)',
+        }}
+      >
+        {place.cover_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={place.cover_url} alt={place.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <div style={{ width: '100%', height: '100%', background: `linear-gradient(160deg, var(--ardesia), var(--oliva))` }} />
+        )}
+      </div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.11em', color: catColor(place.category), marginBottom: 3, fontFamily: 'var(--font-sans)' }}>
+          {place.category}{place.hours ? ` · ${place.hours}` : ''}
+        </div>
+        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 16, color: 'var(--ciocco)', lineHeight: 1.2, marginBottom: 3 }}>
+          {place.name}
+        </div>
+        <div style={{ fontSize: 10.5, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+          {place.walk_minutes ? `${place.walk_minutes} min a piedi` : (place.address ?? '')}
+        </div>
+      </div>
+      <div style={{ fontSize: 14, color: 'var(--avorio-dim)', display: 'flex', alignItems: 'center', paddingLeft: 8 }}>›</div>
+    </button>
+  );
 }
 
-export function EssentialsTab({ coverPlaces, allPlaces }: Props) {
-  const [view, setView] = useState<View>('cover');
+interface Props {
+  places: Place[];
+}
+
+export function EssentialsTab({ places }: Props) {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
 
-  if (view === 'detail' && selectedPlace) {
-    return (
-      <DetailPage
-        place={selectedPlace}
-        tabLabel="Essentials"
-        onBack={() => setView('catalog')}
-      />
-    );
-  }
-
-  if (view === 'catalog') {
-    return (
-      <CatalogView
-        places={allPlaces}
-        tabLabel="Essentials"
-        onSelect={place => { setSelectedPlace(place); setView('detail'); }}
-        onBack={() => setView('cover')}
-      />
-    );
-  }
-
-  const cards = coverPlaces.map(place => (
-    <HeroPage
-      key={place.id}
-      photoUrl={place.cover_url ?? undefined}
-      gradient={CATEGORY_GRADIENTS[place.category] ?? DEFAULT_GRADIENT}
-      categoryColor="var(--ardesia)"
-      categoryLabel={[place.category, place.hours?.slice(0, 12)].filter(Boolean).join(' · ')}
-      title={place.name}
-      subtitle={place.description?.slice(0, 100) ?? undefined}
-      swipeHint
-    />
-  ));
-
-  if (cards.length === 0) {
-    cards.push(
-      <HeroPage
-        key="empty"
-        gradient={DEFAULT_GRADIENT}
-        categoryColor="var(--ardesia)"
-        categoryLabel="Essentials"
-        title="Everything you need."
-        subtitle="Markets, transit, pharmacy, and more."
-      />
-    );
-  }
+  const grouped = places.reduce<Record<string, Place[]>>((acc, p) => {
+    if (!acc[p.category]) acc[p.category] = [];
+    acc[p.category].push(p);
+    return acc;
+  }, {});
+  const categoryOrder = Array.from(new Set(places.map(p => p.category)));
 
   return (
-    <VerticalDeck
-      cards={cards}
-      onPullUp={() => setView('catalog')}
-    />
+    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: 'var(--avorio)', position: 'relative' }}>
+
+      {/* ── Header ─────────────────────────────────────────── */}
+      <div style={{ background: 'var(--ardesia)', padding: 'calc(env(safe-area-inset-top, 0px) + 1rem) 18px 14px', flexShrink: 0 }}>
+        <div style={{ fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'rgba(255,255,255,0.55)', marginBottom: 2, fontFamily: 'var(--font-sans)' }}>
+          Pigneto Insights
+        </div>
+        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 22, color: 'var(--avorio)', lineHeight: 1.1 }}>
+          Nel Quartiere
+        </div>
+      </div>
+
+      {/* ── Grouped list ───────────────────────────────────── */}
+      {categoryOrder.map(cat => (
+        <div key={cat}>
+          <div style={{ padding: '11px 18px 6px', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.13em', color: 'var(--avorio-dk)', background: 'hsl(37, 30%, 84%)', borderBottom: '1px solid var(--avorio-dim)', fontFamily: 'var(--font-sans)' }}>
+            {cat}
+          </div>
+          <div style={{ padding: '0 18px' }}>
+            {grouped[cat].map(p => <PlaceRow key={p.id} place={p} onTap={() => setSelectedPlace(p)} />)}
+          </div>
+        </div>
+      ))}
+
+      {/* ── Detail overlay ─────────────────────────────────── */}
+      {selectedPlace && (
+        <PlaceDetail place={selectedPlace} onClose={() => setSelectedPlace(null)} />
+      )}
+    </div>
   );
 }

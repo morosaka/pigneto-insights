@@ -2,86 +2,140 @@
 import { useState } from 'react';
 import type { Place } from '@/lib/types';
 import { priceTierLabel } from '@/lib/types';
-import { VerticalDeck } from '../VerticalDeck';
-import { HeroPage } from '../HeroPage';
-import { CatalogView } from '../CatalogView';
-import { DetailPage } from '../DetailPage';
+import { PlaceDetail } from '@/components/PlaceDetail';
 
-const CATEGORY_GRADIENTS: Record<string, string> = {
-  'Café':       'linear-gradient(162deg, hsl(19,34%,10%), hsl(19,30%,22%), hsl(23,35%,36%))',
-  'Brewery':    'linear-gradient(155deg, hsl(19,28%,8%), hsl(19,30%,18%), hsl(23,35%,32%))',
-  'Trattoria':  'linear-gradient(158deg, hsl(10,68%,10%), hsl(10,65%,22%), hsl(23,55%,36%))',
-  'Wine bar':   'linear-gradient(152deg, hsl(10,50%,12%), hsl(10,45%,22%), hsl(23,40%,34%))',
-  'Club':       'linear-gradient(165deg, hsl(19,34%,6%), hsl(206,47%,14%), hsl(19,28%,24%))',
-  'Pizzeria':   'linear-gradient(150deg, hsl(10,68%,12%), hsl(10,60%,24%), hsl(23,55%,38%))',
-  'Gelateria':  'linear-gradient(158deg, hsl(206,47%,10%), hsl(206,44%,22%), hsl(206,40%,36%))',
-  'Steakhouse': 'linear-gradient(160deg, hsl(10,55%,10%), hsl(10,50%,20%), hsl(19,34%,30%))',
-  'Seafood':    'linear-gradient(155deg, hsl(206,47%,10%), hsl(206,40%,20%), hsl(206,35%,32%))',
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+const CAT_COLOR: Record<string, string> = {
+  'Café':         'var(--ciocco)',
+  'Brewery':      'var(--ciocco)',
+  'Trattoria':    'var(--pompei)',
+  'Wine bar':     'var(--pompei)',
+  'Restaurant':   'var(--pompei)',
+  'Pizzeria':     'var(--pompei)',
+  'Steakhouse':   'var(--pompei)',
+  'Seafood':      'var(--ardesia)',
+  'Gelateria':    'var(--ardesia)',
+  'Club':         'var(--ardesia)',
+  'Japanese':     'var(--ardesia)',
+  'International':'var(--oliva)',
+  'Gastropub':    'var(--oliva)',
+  'Street food':  'var(--terra)',
 };
-const DEFAULT_GRADIENT = 'linear-gradient(162deg, hsl(19,34%,10%), hsl(10,68%,24%), hsl(23,55%,40%))';
+function catColor(cat: string) { return CAT_COLOR[cat] ?? 'var(--terra)'; }
 
-type View = 'cover' | 'catalog' | 'detail';
+// ── sub-components ────────────────────────────────────────────────────────────
 
-interface Props {
-  coverPlaces: Place[];
-  allPlaces: Place[];
+function PlaceRow({ place, onTap }: { place: Place; onTap: () => void }) {
+  const price = priceTierLabel(place.price_tier);
+  return (
+    <button
+      onClick={onTap}
+      style={{
+        display: 'flex', alignItems: 'stretch', width: '100%',
+        padding: '12px 0',
+        borderBottom: '1px solid var(--avorio-dim)',
+        background: 'none', border: 'none',
+        borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--avorio-dim)',
+        cursor: 'pointer', textAlign: 'left',
+        WebkitTapHighlightColor: 'transparent',
+      } as React.CSSProperties}
+    >
+      <div
+        style={{
+          width: 58, height: 68, borderRadius: 9,
+          flexShrink: 0, overflow: 'hidden',
+          marginRight: 12, background: 'var(--avorio-dim)',
+        }}
+      >
+        {place.cover_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={place.cover_url} alt={place.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <div style={{ width: '100%', height: '100%', background: `linear-gradient(160deg, var(--ciocco), ${catColor(place.category)})` }} />
+        )}
+      </div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.11em', color: catColor(place.category), marginBottom: 3, fontFamily: 'var(--font-sans)' }}>
+          {place.category}{price ? ` · ${price}` : ''}
+        </div>
+        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 16, color: 'var(--ciocco)', lineHeight: 1.2, marginBottom: 3 }}>
+          {place.name}
+        </div>
+        <div style={{ fontSize: 10.5, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+          {place.walk_minutes ? `${place.walk_minutes} min a piedi` : (place.address ?? '')}
+        </div>
+      </div>
+      <div style={{ fontSize: 14, color: 'var(--avorio-dim)', display: 'flex', alignItems: 'center', paddingLeft: 8 }}>›</div>
+    </button>
+  );
 }
 
-export function EatDrinkTab({ coverPlaces, allPlaces }: Props) {
-  const [view, setView] = useState<View>('cover');
+// ── main ──────────────────────────────────────────────────────────────────────
+
+interface Props {
+  places: Place[];
+}
+
+export function EatDrinkTab({ places }: Props) {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
 
-  if (view === 'detail' && selectedPlace) {
-    return (
-      <DetailPage
-        place={selectedPlace}
-        tabLabel="Eat & Drink"
-        onBack={() => setView('catalog')}
-      />
-    );
-  }
-
-  if (view === 'catalog') {
-    return (
-      <CatalogView
-        places={allPlaces}
-        tabLabel="Eat & Drink"
-        onSelect={place => { setSelectedPlace(place); setView('detail'); }}
-        onBack={() => setView('cover')}
-      />
-    );
-  }
-
-  const cards = coverPlaces.map(place => (
-    <HeroPage
-      key={place.id}
-      photoUrl={place.cover_url ?? undefined}
-      gradient={CATEGORY_GRADIENTS[place.category] ?? DEFAULT_GRADIENT}
-      categoryColor="var(--terra)"
-      categoryLabel={[place.category, priceTierLabel(place.price_tier)].filter(Boolean).join(' · ')}
-      title={place.name}
-      subtitle={place.description?.slice(0, 100) ?? undefined}
-      swipeHint
-    />
-  ));
-
-  if (cards.length === 0) {
-    cards.push(
-      <HeroPage
-        key="empty"
-        gradient={DEFAULT_GRADIENT}
-        categoryColor="var(--terra)"
-        categoryLabel="Eat & Drink"
-        title="Pigneto's best."
-        subtitle="From trattorias to craft breweries."
-      />
-    );
-  }
+  const categories = Array.from(new Set(places.map(p => p.category)));
+  const filtered = activeCategory ? places.filter(p => p.category === activeCategory) : places;
 
   return (
-    <VerticalDeck
-      cards={cards}
-      onPullUp={() => setView('catalog')}
-    />
+    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: 'var(--avorio)', position: 'relative' }}>
+
+      {/* ── Header ─────────────────────────────────────────── */}
+      <div style={{ background: 'var(--ciocco)', padding: 'calc(env(safe-area-inset-top, 0px) + 1rem) 18px 14px', flexShrink: 0 }}>
+        <div style={{ fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--terra)', marginBottom: 2, fontFamily: 'var(--font-sans)' }}>
+          Pigneto Insights
+        </div>
+        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 22, color: 'var(--avorio)', lineHeight: 1.1 }}>
+          Eat &amp; Drink
+        </div>
+      </div>
+
+      {/* ── Filter chips ───────────────────────────────────── */}
+      <div style={{ display: 'flex', gap: 8, padding: '12px 18px 8px', overflowX: 'auto', scrollbarWidth: 'none', flexShrink: 0 } as React.CSSProperties}>
+        <FilterChip label="Tutti" active={activeCategory === null} onClick={() => setActiveCategory(null)} />
+        {categories.map(cat => (
+          <FilterChip key={cat} label={cat} active={activeCategory === cat} onClick={() => setActiveCategory(cat)} />
+        ))}
+      </div>
+
+      {/* ── Place list ─────────────────────────────────────── */}
+      <div style={{ padding: '0 18px' }}>
+        {filtered.map(p => <PlaceRow key={p.id} place={p} onTap={() => setSelectedPlace(p)} />)}
+      </div>
+
+      {/* ── Detail overlay ─────────────────────────────────── */}
+      {selectedPlace && (
+        <PlaceDetail place={selectedPlace} onClose={() => setSelectedPlace(null)} />
+      )}
+    </div>
+  );
+}
+
+function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        flexShrink: 0,
+        fontSize: 10, fontWeight: 500,
+        textTransform: 'uppercase', letterSpacing: '0.09em',
+        padding: '5px 12px', borderRadius: 20,
+        border: `1px solid ${active ? 'var(--ciocco)' : 'var(--avorio-dim)'}`,
+        background: active ? 'var(--ciocco)' : 'transparent',
+        color: active ? 'var(--avorio)' : 'var(--avorio-dk)',
+        cursor: 'pointer', fontFamily: 'var(--font-sans)',
+        transition: 'all 0.15s',
+        WebkitTapHighlightColor: 'transparent',
+      } as React.CSSProperties}
+    >
+      {label}
+    </button>
   );
 }

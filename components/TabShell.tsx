@@ -1,84 +1,81 @@
 'use client';
-import { useState, useCallback, useRef, ReactNode } from 'react';
-import { useSwipe } from '@/hooks/useSwipe';
-import { PageNavigator } from './PageNavigator';
+import { useRef, useEffect, useCallback, ReactNode } from 'react';
+import { BottomNav } from './BottomNav';
+
+const NAV_H = 'calc(66px + env(safe-area-inset-bottom, 0px))';
 
 interface Props {
   tabs: ReactNode[];
-  initialTab?: number;
-  onTabChange?: (index: number) => void;
+  activeTab: number;
+  onTabChange: (index: number) => void;
 }
 
-export function TabShell({ tabs, initialTab = 0, onTabChange }: Props) {
-  const [active, setActive] = useState(initialTab);
-  const [dragX, setDragX] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const isMouseDown = useRef(false);
+export function TabShell({ tabs, activeTab, onTabChange }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // avoid re-triggering scroll when we programmatically scroll
+  const programmatic = useRef(false);
 
-  const switchTab = useCallback((newIndex: number) => {
-    if (newIndex < 0 || newIndex >= tabs.length) return;
-    setActive(newIndex);
-    onTabChange?.(newIndex);
-  }, [tabs.length, onTabChange]);
+  // BottomNav click → scroll to tab
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    programmatic.current = true;
+    el.scrollTo({ left: activeTab * el.clientWidth, behavior: 'smooth' });
+    // clear flag after animation
+    const t = setTimeout(() => { programmatic.current = false; }, 400);
+    return () => clearTimeout(t);
+  }, [activeTab]);
 
-  const { onStart, onMove, onEnd, onCancel } = useSwipe({
-    onSwipe(dir) {
-      if (dir === 'left') switchTab(active + 1);
-      if (dir === 'right') switchTab(active - 1);
-    },
-    onDrag(dx) {
-      setIsDragging(true);
-      setDragX(dx);
-    },
-    onRelease() {
-      setIsDragging(false);
-      setDragX(0);
-    },
-  });
-
-  const handleCancel = useCallback(() => {
-    onCancel();
-    isMouseDown.current = false;
-    setIsDragging(false);
-    setDragX(0);
-  }, [onCancel]);
+  // User swipe → detect settled tab
+  const handleScroll = useCallback(() => {
+    if (programmatic.current) return;
+    clearTimeout(scrollTimer.current);
+    scrollTimer.current = setTimeout(() => {
+      const el = containerRef.current;
+      if (!el) return;
+      const idx = Math.round(el.scrollLeft / el.clientWidth);
+      if (idx !== activeTab) onTabChange(idx);
+    }, 80);
+  }, [activeTab, onTabChange]);
 
   return (
-    <div
-      style={{ position: 'absolute', inset: 0, overflow: 'hidden', cursor: isDragging ? 'grabbing' : 'grab' }}
-      onTouchStart={e => onStart(e.nativeEvent)}
-      onTouchMove={e => onMove(e.nativeEvent)}
-      onTouchEnd={e => onEnd(e.nativeEvent)}
-      onTouchCancel={handleCancel}
-      onMouseDown={e => { isMouseDown.current = true; onStart(e.nativeEvent); }}
-      onMouseMove={e => { if (isMouseDown.current) onMove(e.nativeEvent); }}
-      onMouseUp={e => { isMouseDown.current = false; onEnd(e.nativeEvent); }}
-      onMouseLeave={() => { if (isMouseDown.current) handleCancel(); }}
-    >
-      {tabs.map((tab, i) => {
-        const offset = (i - active) * 100;
-        const drag = isDragging
-          ? (i === active ? dragX : dragX * 0.3)
-          : 0;
-        const translateX = `calc(${offset}% + ${drag}px)`;
-
-        return (
+    <div style={{ position: 'absolute', inset: 0 }}>
+      {/* horizontal scroll-snap container */}
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0,
+          bottom: NAV_H,
+          display: 'flex',
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          scrollSnapType: 'x mandatory',
+          scrollbarWidth: 'none',
+          // iOS momentum
+          WebkitOverflowScrolling: 'touch',
+        } as React.CSSProperties}
+      >
+        {tabs.map((tab, i) => (
           <div
             key={i}
             style={{
-              position: 'absolute',
-              inset: 0,
-              transform: `translateX(${translateX})`,
-              transition: isDragging ? 'none' : `transform var(--anim-duration) var(--anim-ease)`,
-              willChange: 'transform',
-            }}
+              flexShrink: 0,
+              width: '100%',
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              scrollSnapAlign: 'start',
+              scrollSnapStop: 'always',
+            } as React.CSSProperties}
           >
             {tab}
           </div>
-        );
-      })}
+        ))}
+      </div>
 
-      <PageNavigator activeTab={active} totalTabs={tabs.length} />
+      <BottomNav activeTab={activeTab} onTabChange={onTabChange} />
     </div>
   );
 }

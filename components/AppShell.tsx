@@ -1,98 +1,48 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { TabShell } from './TabShell';
 import { HomeTab } from './tabs/HomeTab';
 import { EatDrinkTab } from './tabs/EatDrinkTab';
 import { EssentialsTab } from './tabs/EssentialsTab';
 import { DiscoverTab } from './tabs/DiscoverTab';
-import { OnboardingFlow, ONBOARDING_KEY, ONBOARDING_VERSION } from './OnboardingFlow';
-import { SettingsSheet } from './SettingsSheet';
-import type { Place, Story, NewsItem, EvergreenItem } from '@/lib/types';
+import type { Place, Story, NewsItem } from '@/lib/types';
 
 interface Props {
-  eatDrinkCovers: Place[];
-  eatDrinkAll: Place[];
-  essentialsCovers: Place[];
-  essentialsAll: Place[];
   featuredStory: Story | null;
-  featuredNews: NewsItem | null;
-  featuredPlace: Place | null;
+  eatDrinkPreview: Place[];
+  eatDrinkAll: Place[];
+  essentialsAll: Place[];
   stories: Story[];
   news: NewsItem[];
-  evergreen: EvergreenItem[];
-  lastUpdated: string;
 }
 
-export function AppShell(props: Props) {
-  const {
-    eatDrinkCovers, eatDrinkAll,
-    essentialsCovers, essentialsAll,
-    featuredStory, featuredNews, featuredPlace,
-    stories, news, evergreen,
-    lastUpdated,
-  } = props;
-
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-
-  useEffect(() => {
-    const seen = localStorage.getItem(ONBOARDING_KEY) === ONBOARDING_VERSION;
-    if (!seen) setShowOnboarding(true);
-  }, []);
-
-  const handleOnboardingDone = () => {
-    localStorage.setItem(ONBOARDING_KEY, ONBOARDING_VERSION);
-    setShowOnboarding(false);
-  };
-
-  const handleReplayOnboarding = () => {
-    localStorage.removeItem(ONBOARDING_KEY);
-    setShowOnboarding(true);
-  };
+export function AppShell({
+  featuredStory,
+  eatDrinkPreview,
+  eatDrinkAll,
+  essentialsAll,
+  stories,
+  news,
+}: Props) {
+  const [activeTab, setActiveTab] = useState(0);
 
   const tabs = [
     <HomeTab
       key="home"
       featuredStory={featuredStory}
-      featuredNews={featuredNews}
-      featuredPlace={featuredPlace}
+      eatDrinkPreview={eatDrinkPreview}
+      news={news}
+      onViewEatDrink={() => setActiveTab(1)}
+      onViewDiscover={() => setActiveTab(3)}
     />,
-    <EatDrinkTab key="eat" coverPlaces={eatDrinkCovers} allPlaces={eatDrinkAll} />,
-    <EssentialsTab key="ess" coverPlaces={essentialsCovers} allPlaces={essentialsAll} />,
-    <DiscoverTab key="disc" stories={stories} news={news} evergreen={evergreen} />,
+    <EatDrinkTab key="eat" places={eatDrinkAll} />,
+    <EssentialsTab key="ess" places={essentialsAll} />,
+    <DiscoverTab key="disc" stories={stories} news={news} />,
   ];
 
   return (
     <div style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}>
-      {/* Settings trigger — ⋯ top-right, above safe area */}
-      <button
-        onClick={() => setShowSettings(true)}
-        aria-label="Settings"
-        style={{
-          position: 'absolute',
-          top: 'calc(12px + env(safe-area-inset-top, 0px))',
-          right: 16,
-          zIndex: 80,
-          fontFamily: 'var(--font-dm-sans), system-ui, sans-serif',
-          fontSize: 20, lineHeight: 1,
-          color: 'rgba(255,255,255,0.3)',
-          background: 'none', border: 'none', cursor: 'pointer',
-          padding: '8px',
-        }}
-      >
-        ⋯
-      </button>
-
-      <TabShell tabs={tabs} />
-
-      {showOnboarding && <OnboardingFlow onDone={handleOnboardingDone} />}
-      {showSettings && (
-        <SettingsSheet
-          onClose={() => setShowSettings(false)}
-          onReplayOnboarding={handleReplayOnboarding}
-          lastUpdated={lastUpdated}
-        />
-      )}
+      <TabShell tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 }

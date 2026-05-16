@@ -1,152 +1,161 @@
 'use client';
 import { useState } from 'react';
-import type { Story, NewsItem, EvergreenItem } from '@/lib/types';
-import { VerticalDeck } from '../VerticalDeck';
-import { HeroPage } from '../HeroPage';
-import { AudioPlayer } from '../AudioPlayer';
+import type { Story, NewsItem } from '@/lib/types';
+import { StoryDetail } from '@/components/StoryDetail';
 
-type Section = 'stories' | 'news' | 'evergreen';
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+const EVERGREEN_PILLS = [
+  { label: 'storia del quartiere', color: 'var(--oliva)' },
+  { label: 'trasporti Roma',       color: 'var(--ardesia)' },
+  { label: 'cucina romana',        color: 'var(--pompei)' },
+  { label: 'itinerari a piedi',    color: 'var(--oliva)' },
+  { label: 'mercati storici',      color: 'var(--ardesia)' },
+  { label: 'street art',           color: 'var(--pompei)' },
+  { label: 'parchi e giardini',    color: 'var(--oliva)' },
+  { label: 'musei gratuiti',       color: 'var(--ardesia)' },
+  { label: 'cibo tipico',          color: 'var(--pompei)' },
+];
+
+function newsColor(category: string | null): string {
+  const map: Record<string, string> = { food: 'var(--terra)', sport: 'var(--oliva)', culture: 'var(--ardesia)' };
+  return map[category ?? ''] ?? 'var(--pompei)';
+}
+
+function formatDateRange(start: string | null, end: string | null): string {
+  if (!start) return '';
+  const months = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+  const s = start.split('-');
+  const label = `${parseInt(s[2])} ${months[parseInt(s[1]) - 1]}`;
+  if (!end || end === start) return label;
+  const e = end.split('-');
+  return `${label} – ${parseInt(e[2])} ${months[parseInt(e[1]) - 1]}`;
+}
+
+// ── sub-components ────────────────────────────────────────────────────────────
+
+function SectionHeader({ label, color }: { label: string; color: string }) {
+  return (
+    <div style={{ padding: '13px 18px 11px', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ width: 3, height: 16, borderRadius: 2, background: color, flexShrink: 0 }} />
+      <span style={{ fontSize: 9.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.13em', color, fontFamily: 'var(--font-sans)' }}>
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function NewsRow({ item }: { item: NewsItem }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 18px', borderBottom: '1px solid var(--avorio-dim)' }}>
+      <div style={{ width: 7, height: 7, borderRadius: '50%', flexShrink: 0, marginTop: 5, background: newsColor(item.category) }} />
+      <div style={{ flex: 1 }}>
+        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 14.5, color: 'var(--ciocco)', lineHeight: 1.25, marginBottom: 2 }}>
+          {item.title}
+        </div>
+        <div style={{ fontSize: 10, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+          {formatDateRange(item.date_start, item.date_end)}
+          {item.location ? ` · ${item.location}` : ''}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StoryCard({ story, onTap }: { story: Story; onTap: () => void }) {
+  const readingTime = story.audio_time_min ?? story.reading_time_min;
+  return (
+    <button
+      onClick={onTap}
+      style={{
+        display: 'block',
+        width: 'calc(100% - 36px)',
+        margin: '0 18px 12px', padding: 0,
+        borderRadius: 14, overflow: 'hidden',
+        boxShadow: '0 3px 14px rgba(19,12,6,0.1)',
+        background: 'none', border: 'none',
+        cursor: 'pointer', textAlign: 'left',
+        WebkitTapHighlightColor: 'transparent',
+      } as React.CSSProperties}
+    >
+      {/* hero area */}
+      <div
+        style={{
+          minHeight: 110,
+          background: 'linear-gradient(162deg, var(--ciocco), var(--pompei))',
+          display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+          padding: '11px 14px', position: 'relative',
+        }}
+      >
+        {story.cover_url && (
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${story.cover_url})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.35 }} />
+        )}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 17, color: 'var(--avorio)', lineHeight: 1.15, marginBottom: 6 }}>
+            {story.title}
+          </div>
+          {readingTime && (
+            <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-sans)' }}>
+              {readingTime} min read
+            </span>
+          )}
+        </div>
+      </div>
+      {/* body */}
+      {story.summary && (
+        <div style={{ background: 'white', padding: '10px 14px 12px', fontSize: 11.5, color: 'var(--avorio-dk)', lineHeight: 1.5, fontFamily: 'var(--font-sans)' }}>
+          {story.summary}
+        </div>
+      )}
+    </button>
+  );
+}
+
+// ── main ──────────────────────────────────────────────────────────────────────
 
 interface Props {
   stories: Story[];
   news: NewsItem[];
-  evergreen: EvergreenItem[];
 }
 
-export function DiscoverTab({ stories, news, evergreen }: Props) {
-  const [section, setSection] = useState<Section>('stories');
-
-  const SECTIONS: { key: Section; label: string }[] = [
-    { key: 'stories',   label: 'Rome Stories' },
-    { key: 'news',      label: 'News & Events' },
-    { key: 'evergreen', label: 'Evergreen' },
-  ];
-
-  const picker = (
-    <div style={{
-      position: 'absolute', top: 48, left: 0, right: 0, zIndex: 10,
-      display: 'flex', justifyContent: 'center', gap: 8,
-      pointerEvents: 'none',
-    }}>
-      {SECTIONS.map(({ key, label }) => (
-        <button
-          key={key}
-          onClick={() => setSection(key)}
-          style={{
-            fontFamily: 'var(--font-dm-sans), system-ui, sans-serif',
-            fontSize: 9, fontWeight: 500,
-            letterSpacing: '0.10em', textTransform: 'uppercase',
-            padding: '4px 10px', borderRadius: 20,
-            border: section === key ? 'none' : '1px solid rgba(255,255,255,0.3)',
-            background: section === key ? 'var(--terra)' : 'rgba(0,0,0,0.25)',
-            color: 'white', cursor: 'pointer',
-            pointerEvents: 'auto',
-          }}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-
-  let cards: React.ReactNode[] = [];
-
-  if (section === 'stories') {
-    if (stories.length === 0) {
-      cards = [
-        <HeroPage
-          key="empty-stories"
-          gradient="linear-gradient(155deg, hsl(10,68%,10%), hsl(10,65%,22%), hsl(23,55%,36%))"
-          categoryColor="var(--terra)"
-          categoryLabel="Rome Stories"
-          title="Stories coming soon."
-          subtitle="Longform Rome, one story at a time."
-        />
-      ];
-    } else {
-      cards = stories.map(story => (
-        <HeroPage
-          key={story.id}
-          photoUrl={story.cover_url ?? undefined}
-          gradient="linear-gradient(155deg, hsl(10,68%,10%), hsl(10,65%,22%), hsl(23,55%,36%))"
-          categoryColor="var(--terra)"
-          categoryLabel="Rome Stories"
-          title={story.title}
-          subtitle={story.summary ?? undefined}
-          swipeHint={stories.indexOf(story) < stories.length - 1}
-        >
-          <AudioPlayer
-            audioUrl={story.audio_url}
-            durationMin={story.audio_time_min ?? story.reading_time_min}
-            title={story.title}
-          />
-        </HeroPage>
-      ));
-    }
-  }
-
-  if (section === 'news') {
-    if (news.length === 0) {
-      cards = [
-        <HeroPage
-          key="empty-news"
-          gradient="linear-gradient(145deg, hsl(111,41%,12%), hsl(111,38%,28%), hsl(111,35%,40%))"
-          categoryColor="var(--oliva)"
-          categoryLabel="News & Events"
-          title="No events this week."
-          subtitle="Check back soon."
-        />
-      ];
-    } else {
-      cards = news.map((item, idx) => (
-        <HeroPage
-          key={item.id}
-          gradient="linear-gradient(145deg, hsl(111,41%,12%), hsl(111,38%,28%), hsl(111,35%,40%))"
-          categoryColor="var(--oliva)"
-          categoryLabel="News & Events"
-          title={item.title}
-          subtitle={[
-            item.location,
-            item.date_start,
-            item.date_end && item.date_end !== item.date_start ? `→ ${item.date_end}` : null,
-          ].filter(Boolean).join(' · ')}
-          swipeHint={idx < news.length - 1}
-        />
-      ));
-    }
-  }
-
-  if (section === 'evergreen') {
-    if (evergreen.length === 0) {
-      cards = [
-        <HeroPage
-          key="empty-evergreen"
-          gradient="linear-gradient(152deg, hsl(206,47%,10%), hsl(206,44%,22%), hsl(206,40%,34%))"
-          categoryColor="var(--ardesia)"
-          categoryLabel="Rome Evergreen"
-          title="More stories coming soon."
-          subtitle="New content added every two weeks."
-        />
-      ];
-    } else {
-      cards = evergreen.map((item, idx) => (
-        <HeroPage
-          key={item.id}
-          gradient="linear-gradient(152deg, hsl(206,47%,10%), hsl(206,44%,22%), hsl(206,40%,34%))"
-          categoryColor="var(--ardesia)"
-          categoryLabel={item.tags.slice(0, 2).join(' · ') || 'Rome Evergreen'}
-          title={item.title}
-          subtitle={item.body_md?.slice(0, 120) ?? undefined}
-          swipeHint={idx < evergreen.length - 1}
-        />
-      ));
-    }
-  }
+export function DiscoverTab({ stories, news }: Props) {
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {picker}
-      <VerticalDeck key={section} cards={cards} />
+    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: 'var(--avorio)', paddingTop: 'env(safe-area-inset-top, 0px)', position: 'relative' }}>
+
+      {/* ── News & Events ──────────────────────────────────── */}
+      {news.length > 0 && (
+        <>
+          <SectionHeader label="News & Events" color="var(--oliva)" />
+          {news.map(item => <NewsRow key={item.id} item={item} />)}
+          <div style={{ height: 1, background: 'var(--avorio-dim)' }} />
+        </>
+      )}
+
+      {/* ── Rome Stories ───────────────────────────────────── */}
+      {stories.length > 0 && (
+        <>
+          <SectionHeader label="Rome Stories" color="var(--pompei)" />
+          {stories.map(s => <StoryCard key={s.id} story={s} onTap={() => setSelectedStory(s)} />)}
+          <div style={{ height: 1, background: 'var(--avorio-dim)' }} />
+        </>
+      )}
+
+      {/* ── Roma Evergreen ─────────────────────────────────── */}
+      <SectionHeader label="Roma Evergreen" color="var(--ardesia)" />
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 18px 28px' }}>
+        {EVERGREEN_PILLS.map(pill => (
+          <span key={pill.label} style={{ fontSize: 10.5, padding: '4px 12px', borderRadius: 20, border: `1px solid ${pill.color}`, color: pill.color, fontFamily: 'var(--font-sans)' }}>
+            {pill.label}
+          </span>
+        ))}
+      </div>
+
+      {/* ── Story detail overlay ────────────────────────────── */}
+      {selectedStory && (
+        <StoryDetail story={selectedStory} onClose={() => setSelectedStory(null)} />
+      )}
     </div>
   );
 }
