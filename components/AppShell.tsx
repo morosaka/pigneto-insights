@@ -44,7 +44,7 @@ export function AppShell({
   ];
 
   return (
-    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', zoom: 1.2 } as React.CSSProperties}>
+    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', zoom: 1.4 } as React.CSSProperties}>
       <TabShell tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
