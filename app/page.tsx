@@ -1,14 +1,15 @@
 export const dynamic = 'force-dynamic';
 
 import { AppShell } from '@/components/AppShell';
-import { getAllPlaces, getStories, getActiveNews } from '@/lib/api';
+import { getAllPlaces, getStories, getActiveNews, getEvergreen } from '@/lib/api';
 
 export default async function Page() {
-  const [eatDrinkAll, essentialsAll, stories, news] = await Promise.all([
+  const [eatDrinkAll, essentialsAll, stories, news, evergreenItems] = await Promise.all([
     getAllPlaces('eat-drink').catch(() => []),
     getAllPlaces('essentials').catch(() => []),
     getStories().catch(() => []),
     getActiveNews().catch(() => []),
+    getEvergreen().catch(() => []),
   ]);
 
   const featuredStory = stories[0] ?? null;
@@ -26,6 +27,7 @@ export default async function Page() {
       essentialsAll={essentialsAll}
       stories={stories}
       news={news}
+      evergreenItems={evergreenItems}
     />
   );
 }

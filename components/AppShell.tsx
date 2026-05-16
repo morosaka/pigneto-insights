@@ -5,7 +5,7 @@ import { HomeTab } from './tabs/HomeTab';
 import { EatDrinkTab } from './tabs/EatDrinkTab';
 import { EssentialsTab } from './tabs/EssentialsTab';
 import { DiscoverTab } from './tabs/DiscoverTab';
-import type { Place, Story, NewsItem } from '@/lib/types';
+import type { Place, Story, NewsItem, EvergreenItem } from '@/lib/types';
 
 interface Props {
   featuredStory: Story | null;
@@ -14,6 +14,7 @@ interface Props {
   essentialsAll: Place[];
   stories: Story[];
   news: NewsItem[];
+  evergreenItems: EvergreenItem[];
 }
 
 export function AppShell({
@@ -23,6 +24,7 @@ export function AppShell({
   essentialsAll,
   stories,
   news,
+  evergreenItems,
 }: Props) {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -32,12 +34,13 @@ export function AppShell({
       featuredStory={featuredStory}
       eatDrinkPreview={eatDrinkPreview}
       news={news}
+      evergreenItems={evergreenItems}
       onViewEatDrink={() => setActiveTab(1)}
       onViewDiscover={() => setActiveTab(3)}
     />,
     <EatDrinkTab key="eat" places={eatDrinkAll} />,
     <EssentialsTab key="ess" places={essentialsAll} />,
-    <DiscoverTab key="disc" stories={stories} news={news} />,
+    <DiscoverTab key="disc" stories={stories} news={news} evergreenItems={evergreenItems} />,
   ];
 
   return (

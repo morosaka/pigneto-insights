@@ -3,6 +3,8 @@ import { useState } from 'react';
 import type { Story, NewsItem } from '@/lib/types';
 import { StoryDetail } from '@/components/StoryDetail';
 import { NewsDetail } from '@/components/NewsDetail';
+import { EvergreenOverlay } from '@/components/EvergreenOverlay';
+import type { EvergreenItem } from '@/lib/types';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -127,11 +129,13 @@ function StoryCard({ story, onTap }: { story: Story; onTap: () => void }) {
 interface Props {
   stories: Story[];
   news: NewsItem[];
+  evergreenItems: EvergreenItem[];
 }
 
-export function DiscoverTab({ stories, news }: Props) {
+export function DiscoverTab({ stories, news, evergreenItems }: Props) {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: 'var(--avorio)', paddingTop: 'env(safe-area-inset-top, 0px)', position: 'relative' }}>
@@ -158,9 +162,19 @@ export function DiscoverTab({ stories, news }: Props) {
       <SectionHeader label="Rome Evergreen" color="var(--ardesia)" />
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 18px 28px' }}>
         {EVERGREEN_PILLS.map(pill => (
-          <span key={pill.label} style={{ fontSize: 10.5, padding: '4px 12px', borderRadius: 20, border: `1px solid ${pill.color}`, color: pill.color, fontFamily: 'var(--font-sans)' }}>
+          <button
+            key={pill.label}
+            onClick={() => setSelectedTag(pill.label)}
+            style={{
+              fontSize: 10.5, padding: '4px 12px',
+              borderRadius: 20, border: `1px solid ${pill.color}`,
+              color: pill.color, fontFamily: 'var(--font-sans)',
+              background: 'none', cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+            } as React.CSSProperties}
+          >
             {pill.label}
-          </span>
+          </button>
         ))}
       </div>
 
@@ -170,6 +184,13 @@ export function DiscoverTab({ stories, news }: Props) {
       )}
       {selectedNews && (
         <NewsDetail item={selectedNews} onClose={() => setSelectedNews(null)} />
+      )}
+      {selectedTag && (
+        <EvergreenOverlay
+          tag={selectedTag}
+          items={evergreenItems.filter(e => e.tags.includes(selectedTag))}
+          onClose={() => setSelectedTag(null)}
+        />
       )}
     </div>
   );

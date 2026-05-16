@@ -5,6 +5,8 @@ import { priceTierLabel } from '@/lib/types';
 import { PlaceDetail } from '@/components/PlaceDetail';
 import { StoryDetail } from '@/components/StoryDetail';
 import { NewsDetail } from '@/components/NewsDetail';
+import { EvergreenOverlay } from '@/components/EvergreenOverlay';
+import type { EvergreenItem } from '@/lib/types';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -148,14 +150,16 @@ interface Props {
   featuredStory: Story | null;
   eatDrinkPreview: Place[];
   news: NewsItem[];
+  evergreenItems: EvergreenItem[];
   onViewEatDrink: () => void;
   onViewDiscover: () => void;
 }
 
-export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, onViewDiscover }: Props) {
+export function HomeTab({ featuredStory, eatDrinkPreview, news, evergreenItems, onViewEatDrink, onViewDiscover }: Props) {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const readingTime = featuredStory
     ? (featuredStory.audio_time_min ?? featuredStory.reading_time_min)
@@ -265,16 +269,19 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, 
       <SectionHeader label="Rome — essentials" action="explore →" onAction={onViewDiscover} />
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 18px 28px' }}>
         {EVERGREEN_PILLS.map(pill => (
-          <span
+          <button
             key={pill.label}
+            onClick={() => setSelectedTag(pill.label)}
             style={{
               fontSize: 10.5, padding: '4px 12px',
               borderRadius: 20, border: `1px solid ${pill.color}`,
               color: pill.color, fontFamily: 'var(--font-sans)',
-            }}
+              background: 'none', cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+            } as React.CSSProperties}
           >
             {pill.label}
-          </span>
+          </button>
         ))}
       </div>
 
@@ -287,6 +294,13 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, onViewEatDrink, 
       )}
       {selectedNews && (
         <NewsDetail item={selectedNews} onClose={() => setSelectedNews(null)} />
+      )}
+      {selectedTag && (
+        <EvergreenOverlay
+          tag={selectedTag}
+          items={evergreenItems.filter(e => e.tags.includes(selectedTag))}
+          onClose={() => setSelectedTag(null)}
+        />
       )}
 
     </div>
