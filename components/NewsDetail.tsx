@@ -76,7 +76,7 @@ export function NewsDetail({ item, onClose }: Props) {
           <div
             style={{
               position: 'relative', zIndex: 1,
-              fontSize: 9, fontWeight: 500,
+              fontSize: 14, fontWeight: 500,
               textTransform: 'uppercase', letterSpacing: '0.14em',
               color: 'rgba(255,255,255,0.6)', marginBottom: 10,
               fontFamily: 'var(--font-sans)',
@@ -90,7 +90,7 @@ export function NewsDetail({ item, onClose }: Props) {
           style={{
             position: 'relative', zIndex: 1,
             fontFamily: 'var(--font-serif)', fontStyle: 'italic',
-            fontWeight: 300, fontSize: 26, lineHeight: 1.15,
+            fontWeight: 300, fontSize: 26, lineHeight: 1.2,
             color: 'var(--avorio)', margin: 0,
           }}
         >
@@ -113,7 +113,7 @@ export function NewsDetail({ item, onClose }: Props) {
         {item.summary && (
           <p
             style={{
-              fontSize: 15, lineHeight: 1.75,
+              fontSize: 15, lineHeight: 1.4,
               color: 'var(--ciocco)',
               fontFamily: 'var(--font-sans)',
               margin: 0,

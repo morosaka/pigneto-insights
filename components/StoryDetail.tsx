@@ -38,7 +38,7 @@ function renderBody(md: string) {
           key={i}
           style={{
             fontFamily: 'var(--font-serif)', fontStyle: 'italic',
-            fontWeight: 300, fontSize: 18, lineHeight: 1.25,
+            fontWeight: 300, fontSize: 18, lineHeight: 1.2,
             color: 'var(--ciocco)', margin: '20px 0 6px',
           }}
         >
@@ -58,7 +58,7 @@ function renderBody(md: string) {
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: html }}
         style={{
-          fontSize: 15, lineHeight: 1.75,
+          fontSize: 15, lineHeight: 1.4,
           color: 'var(--ciocco)',
           fontFamily: 'var(--font-sans)',
           margin: '0 0 16px',
@@ -77,16 +77,7 @@ export function StoryDetail({ story, onClose }: Props) {
   const readingTime = story.audio_time_min ?? story.reading_time_min;
 
   return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'white',
-        zIndex: 20,
-        overflowY: 'auto',
-        overflowX: 'hidden',
-      }}
-    >
+    <div className="overlay overlay--white">
       {/* ── Header ──────────────────────────────────────── */}
       <div
         style={{
@@ -105,38 +96,10 @@ export function StoryDetail({ story, onClose }: Props) {
         )}
 
         {/* back button */}
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: 'calc(env(safe-area-inset-top, 0px) + 14px)',
-            left: 16,
-            zIndex: 10,
-            width: 36, height: 36,
-            borderRadius: '50%',
-            background: 'rgba(0,0,0,0.35)',
-            backdropFilter: 'blur(6px)',
-            border: 'none',
-            color: 'white',
-            fontSize: 18,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer',
-            fontFamily: 'var(--font-sans)',
-          }}
-        >
-          ←
-        </button>
+        <button onClick={onClose} className="back-btn">←</button>
 
         {/* eyebrow */}
-        <div
-          style={{
-            position: 'relative', zIndex: 1,
-            fontSize: 9, fontWeight: 500,
-            textTransform: 'uppercase', letterSpacing: '0.14em',
-            color: 'var(--terra)', marginBottom: 10,
-            fontFamily: 'var(--font-sans)',
-          }}
-        >
+        <div className="t-eyebrow" style={{ position: 'relative', zIndex: 1, marginBottom: 10 }}>
           Rome Stories{readingTime ? ` · ${readingTime} min read` : ''}
         </div>
 
@@ -144,7 +107,7 @@ export function StoryDetail({ story, onClose }: Props) {
           style={{
             position: 'relative', zIndex: 1,
             fontFamily: 'var(--font-serif)', fontStyle: 'italic',
-            fontWeight: 300, fontSize: 28, lineHeight: 1.1,
+            fontWeight: 300, fontSize: 28, lineHeight: 1.2,
             color: 'var(--avorio)', margin: 0,
           }}
         >
@@ -157,7 +120,7 @@ export function StoryDetail({ story, onClose }: Props) {
         {story.body_md
           ? renderBody(story.body_md)
           : story.summary && (
-              <p style={{ fontSize: 15, lineHeight: 1.75, color: 'var(--ciocco)', fontFamily: 'var(--font-sans)' }}>
+              <p style={{ fontSize: 15, lineHeight: 1.4, color: 'var(--ciocco)', fontFamily: 'var(--font-sans)' }}>
                 {story.summary}
               </p>
             )}

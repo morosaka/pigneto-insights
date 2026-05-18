@@ -41,7 +41,7 @@ function SectionHeader({ label, color }: { label: string; color: string }) {
   return (
     <div style={{ padding: '13px 18px 11px', display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{ width: 3, height: 16, borderRadius: 2, background: color, flexShrink: 0 }} />
-      <span style={{ fontSize: 9.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.13em', color, fontFamily: 'var(--font-sans)' }}>
+      <span className="t-section" style={{ color }}>
         {label}
       </span>
     </div>
@@ -50,23 +50,13 @@ function SectionHeader({ label, color }: { label: string; color: string }) {
 
 function NewsRow({ item, onTap }: { item: NewsItem; onTap: () => void }) {
   return (
-    <button
-      onClick={onTap}
-      style={{
-        display: 'flex', alignItems: 'flex-start', gap: 10,
-        padding: '10px 18px', width: '100%',
-        background: 'none', border: 'none',
-        borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--avorio-dim)',
-        cursor: 'pointer', textAlign: 'left',
-        WebkitTapHighlightColor: 'transparent',
-      } as React.CSSProperties}
-    >
-      <div style={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0, marginTop: 7, background: newsColor(item.category) }} />
+    <button onClick={onTap} className="news-row">
+      <div className="news-dot" style={{ background: newsColor(item.category) }} />
       <div style={{ flex: 1 }}>
-        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 25, color: 'var(--ciocco)', lineHeight: 1.2, marginBottom: 4 }}>
+        <div className="t-heading" style={{ marginBottom: 4 }}>
           {item.title}
         </div>
-        <div style={{ fontSize: 18, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+        <div className="t-meta">
           {formatDateRange(item.date_start, item.date_end)}
           {item.location ? ` · ${item.location}` : ''}
         </div>
@@ -104,11 +94,11 @@ function StoryCard({ story, onTap }: { story: Story; onTap: () => void }) {
           <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${story.cover_url})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.35 }} />
         )}
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 17, color: 'var(--avorio)', lineHeight: 1.15, marginBottom: 6 }}>
+          <div className="t-heading-sm" style={{ marginBottom: 6 }}>
             {story.title}
           </div>
           {readingTime && (
-            <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-sans)' }}>
+            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-sans)' }}>
               {readingTime} min read
             </span>
           )}
@@ -116,7 +106,7 @@ function StoryCard({ story, onTap }: { story: Story; onTap: () => void }) {
       </div>
       {/* body */}
       {story.summary && (
-        <div style={{ background: 'white', padding: '10px 14px 12px', fontSize: 11.5, color: 'var(--avorio-dk)', lineHeight: 1.5, fontFamily: 'var(--font-sans)' }}>
+        <div className="t-meta" style={{ background: 'white', padding: '10px 14px 12px' }}>
           {story.summary}
         </div>
       )}
@@ -135,7 +125,19 @@ interface Props {
 export function DiscoverTab({ stories, news, evergreenItems }: Props) {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
+
+  function toggleTag(tag: string) {
+    setSelectedTags(prev => {
+      const next = new Set(prev);
+      next.has(tag) ? next.delete(tag) : next.add(tag);
+      return next;
+    });
+  }
+
+  const filteredEvergreen = selectedTags.size === 0
+    ? evergreenItems
+    : evergreenItems.filter(e => e.tags.some(t => selectedTags.has(t)));
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: 'var(--avorio)', paddingTop: 'env(safe-area-inset-top, 0px)', position: 'relative' }}>
@@ -160,23 +162,34 @@ export function DiscoverTab({ stories, news, evergreenItems }: Props) {
 
       {/* ── Rome Evergreen ─────────────────────────────────── */}
       <SectionHeader label="Rome Evergreen" color="var(--ardesia)" />
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 18px 28px' }}>
-        {EVERGREEN_PILLS.map(pill => (
-          <button
-            key={pill.label}
-            onClick={() => setSelectedTag(pill.label)}
-            style={{
-              fontSize: 10.5, padding: '4px 12px',
-              borderRadius: 20, border: `1px solid ${pill.color}`,
-              color: pill.color, fontFamily: 'var(--font-sans)',
-              background: 'none', cursor: 'pointer',
-              WebkitTapHighlightColor: 'transparent',
-            } as React.CSSProperties}
-          >
-            {pill.label}
-          </button>
-        ))}
+      <div className="chip-wrap">
+        {EVERGREEN_PILLS.map(pill => {
+          const active = selectedTags.has(pill.label);
+          return (
+            <button
+              key={pill.label}
+              onClick={() => toggleTag(pill.label)}
+              className="filter-chip"
+              style={active
+                ? { background: pill.color, borderColor: pill.color, color: 'white' }
+                : { border: `1px solid ${pill.color}`, color: pill.color }
+              }
+            >
+              {pill.label}
+            </button>
+          );
+        })}
       </div>
+      {filteredEvergreen.length > 0 && (
+        <div style={{ padding: '0 18px 28px' }}>
+          {filteredEvergreen.map(e => (
+            <div key={e.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--avorio-dim)' }}>
+              <div className="t-heading" style={{ marginBottom: 4 }}>{e.title}</div>
+              {e.body_md && <div className="t-meta">{e.body_md.slice(0, 120)}…</div>}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── Detail overlays ─────────────────────────────────── */}
       {selectedStory && (
@@ -184,13 +197,6 @@ export function DiscoverTab({ stories, news, evergreenItems }: Props) {
       )}
       {selectedNews && (
         <NewsDetail item={selectedNews} onClose={() => setSelectedNews(null)} />
-      )}
-      {selectedTag && (
-        <EvergreenOverlay
-          tag={selectedTag}
-          items={evergreenItems.filter(e => e.tags.includes(selectedTag))}
-          onClose={() => setSelectedTag(null)}
-        />
       )}
     </div>
   );

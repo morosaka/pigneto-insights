@@ -31,7 +31,7 @@ function renderBody(md: string) {
     return (
       <p key={i} // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: html }}
-        style={{ fontSize: 15, lineHeight: 1.75, color: 'var(--ciocco)', fontFamily: 'var(--font-sans)', margin: '0 0 16px' }}
+        style={{ fontSize: 15, lineHeight: 1.4, color: 'var(--ciocco)', fontFamily: 'var(--font-sans)', margin: '0 0 16px' }}
       />
     );
   });
@@ -71,12 +71,12 @@ export function EvergreenDetail({ item, onClose }: Props) {
         </button>
 
         {item.tags.length > 0 && (
-          <div style={{ position: 'relative', zIndex: 1, fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'rgba(255,255,255,0.6)', marginBottom: 10, fontFamily: 'var(--font-sans)' }}>
+          <div style={{ position: 'relative', zIndex: 1, fontSize: 14, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'rgba(255,255,255,0.6)', marginBottom: 10, fontFamily: 'var(--font-sans)' }}>
             {item.tags.join(' · ')}
           </div>
         )}
 
-        <h1 style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 26, lineHeight: 1.15, color: 'var(--avorio)', margin: 0 }}>
+        <h1 style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 26, lineHeight: 1.2, color: 'var(--avorio)', margin: 0 }}>
           {item.title}
         </h1>
       </div>
@@ -86,7 +86,7 @@ export function EvergreenDetail({ item, onClose }: Props) {
         {item.body_md
           ? renderBody(item.body_md)
           : (
-            <p style={{ fontSize: 15, lineHeight: 1.75, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)', fontStyle: 'italic' }}>
+            <p style={{ fontSize: 15, lineHeight: 1.4, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)', fontStyle: 'italic' }}>
               Content coming soon.
             </p>
           )}

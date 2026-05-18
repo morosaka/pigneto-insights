@@ -67,10 +67,10 @@ export function EvergreenOverlay({ tag, items, onClose }: Props) {
           ←
         </button>
 
-        <div style={{ position: 'relative', zIndex: 1, fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'rgba(255,255,255,0.55)', marginBottom: 6, fontFamily: 'var(--font-sans)' }}>
+        <div style={{ position: 'relative', zIndex: 1, fontSize: 14, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'rgba(255,255,255,0.55)', marginBottom: 6, fontFamily: 'var(--font-sans)' }}>
           Rome Evergreen
         </div>
-        <h1 style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 24, lineHeight: 1.15, color: 'var(--avorio)', margin: 0, textTransform: 'capitalize' }}>
+        <h1 style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 24, lineHeight: 1.2, color: 'var(--avorio)', margin: 0, textTransform: 'capitalize' }}>
           {tag}
         </h1>
       </div>
@@ -85,7 +85,7 @@ export function EvergreenOverlay({ tag, items, onClose }: Props) {
             <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 18, color: 'var(--avorio-dk)', marginBottom: 8 }}>
               Coming soon
             </div>
-            <div style={{ fontSize: 12, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 12, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)', lineHeight: 1.4,}}>
               We&apos;re working on articles for this topic.
             </div>
           </div>

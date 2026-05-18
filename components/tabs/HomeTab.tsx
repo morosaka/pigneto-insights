@@ -96,7 +96,7 @@ function HorizontalPlaceCard({ place, onTap }: { place: Place; onTap: () => void
         >
           {place.name}
         </div>
-        <div style={{ fontSize: 16, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+        <div className="t-meta" style={{ fontSize: 16 }}>
           {[price, place.walk_minutes ? `${place.walk_minutes} min` : null].filter(Boolean).join(' · ')}
         </div>
       </div>
@@ -106,36 +106,13 @@ function HorizontalPlaceCard({ place, onTap }: { place: Place; onTap: () => void
 
 function NewsRow({ item, onTap }: { item: NewsItem; onTap: () => void }) {
   return (
-    <button
-      onClick={onTap}
-      style={{
-        display: 'flex', alignItems: 'flex-start', gap: 10,
-        padding: '10px 18px', width: '100%',
-        borderBottom: '1px solid var(--avorio-dim)',
-        background: 'none', border: 'none',
-        borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--avorio-dim)',
-        cursor: 'pointer', textAlign: 'left',
-        WebkitTapHighlightColor: 'transparent',
-      } as React.CSSProperties}
-    >
-      <div
-        style={{
-          width: 10, height: 10, borderRadius: '50%',
-          flexShrink: 0, marginTop: 7,
-          background: newsColor(item.category),
-        }}
-      />
+    <button onClick={onTap} className="news-row">
+      <div className="news-dot" style={{ background: newsColor(item.category) }} />
       <div style={{ flex: 1 }}>
-        <div
-          style={{
-            fontFamily: 'var(--font-serif)', fontStyle: 'italic',
-            fontSize: 25, color: 'var(--ciocco)',
-            lineHeight: 1.2, marginBottom: 4,
-          }}
-        >
+        <div className="t-heading" style={{ marginBottom: 4 }}>
           {item.title}
         </div>
-        <div style={{ fontSize: 18, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+        <div className="t-meta">
           {formatDateRange(item.date_start, item.date_end)}
           {item.location ? ` · ${item.location}` : ''}
         </div>
@@ -159,7 +136,15 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, evergreenItems, 
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
+
+  function toggleTag(tag: string) {
+    setSelectedTags(prev => {
+      const next = new Set(prev);
+      next.has(tag) ? next.delete(tag) : next.add(tag);
+      return next;
+    });
+  }
 
   const readingTime = featuredStory
     ? (featuredStory.audio_time_min ?? featuredStory.reading_time_min)
@@ -192,32 +177,21 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, evergreenItems, 
           {/* eyebrow */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <div style={{ width: 20, height: 1, background: 'var(--terra)', opacity: 0.8, flexShrink: 0 }} />
-            <span
-              style={{
-                fontSize: 9.5, fontWeight: 500,
-                letterSpacing: '0.14em', textTransform: 'uppercase',
-                color: 'var(--terra)', fontFamily: 'var(--font-sans)',
-              }}
-            >
+            <span className="t-eyebrow">
               {featuredStory ? 'Rome Stories' : 'Pigneto Insights'}
             </span>
           </div>
 
-          <h1
-            style={{
-              fontFamily: 'var(--font-serif)', fontWeight: 300, fontStyle: 'italic',
-              fontSize: 32, lineHeight: 1.08, color: 'var(--avorio)', marginBottom: 8,
-            }}
-          >
+          <h1 className="t-hero" style={{ marginBottom: 8 }}>
             {featuredStory ? featuredStory.title : 'Welcome to Pigneto'}
           </h1>
 
           {featuredStory?.summary && (
             <p
               style={{
-                fontSize: 12, fontWeight: 300, lineHeight: 1.55,
+                fontSize: 16, fontWeight: 300, lineHeight: 1.4,
                 color: 'rgba(232,218,198,0.55)', marginBottom: 14,
-                maxWidth: 260, fontFamily: 'var(--font-sans)',
+                maxWidth: 280, fontFamily: 'var(--font-sans)',
               }}
             >
               {featuredStory.summary}
@@ -227,7 +201,7 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, evergreenItems, 
           {readingTime && (
             <span
               style={{
-                fontSize: 10, color: 'rgba(232,218,198,0.45)',
+                fontSize: 14, color: 'rgba(232,218,198,0.45)',
                 fontFamily: 'var(--font-sans)', letterSpacing: '0.04em',
               }}
             >
@@ -241,13 +215,7 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, evergreenItems, 
       {eatDrinkPreview.length > 0 && (
         <>
           <SectionHeader label="Where to Eat" action="see all →" onAction={onViewEatDrink} />
-          <div
-            style={{
-              display: 'flex', gap: 10,
-              padding: '0 18px 16px',
-              overflowX: 'auto', scrollbarWidth: 'none',
-            } as React.CSSProperties}
-          >
+          <div className="hscroll">
             {eatDrinkPreview.map(p => <HorizontalPlaceCard key={p.id} place={p} onTap={() => setSelectedPlace(p)} />)}
           </div>
         </>
@@ -267,22 +235,23 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, evergreenItems, 
 
       {/* ── Roma Evergreen ─────────────────────────────────── */}
       <SectionHeader label="Rome — essentials" action="explore →" onAction={onViewDiscover} />
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 18px 28px' }}>
-        {EVERGREEN_PILLS.map(pill => (
-          <button
-            key={pill.label}
-            onClick={() => setSelectedTag(pill.label)}
-            style={{
-              fontSize: 10.5, padding: '4px 12px',
-              borderRadius: 20, border: `1px solid ${pill.color}`,
-              color: pill.color, fontFamily: 'var(--font-sans)',
-              background: 'none', cursor: 'pointer',
-              WebkitTapHighlightColor: 'transparent',
-            } as React.CSSProperties}
-          >
-            {pill.label}
-          </button>
-        ))}
+      <div className="chip-wrap" style={{ paddingBottom: 28 }}>
+        {EVERGREEN_PILLS.map(pill => {
+          const active = selectedTags.has(pill.label);
+          return (
+            <button
+              key={pill.label}
+              onClick={() => toggleTag(pill.label)}
+              className="filter-chip"
+              style={active
+                ? { background: pill.color, borderColor: pill.color, color: 'white' }
+                : { border: `1px solid ${pill.color}`, color: pill.color }
+              }
+            >
+              {pill.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* ── Overlays ───────────────────────────────────────── */}
@@ -295,13 +264,6 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, evergreenItems, 
       {selectedNews && (
         <NewsDetail item={selectedNews} onClose={() => setSelectedNews(null)} />
       )}
-      {selectedTag && (
-        <EvergreenOverlay
-          tag={selectedTag}
-          items={evergreenItems.filter(e => e.tags.includes(selectedTag))}
-          onClose={() => setSelectedTag(null)}
-        />
-      )}
 
     </div>
   );
@@ -311,15 +273,10 @@ export function HomeTab({ featuredStory, eatDrinkPreview, news, evergreenItems, 
 
 function SectionHeader({ label, action, onAction }: { label: string; action?: string; onAction?: () => void }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '16px 18px 8px' }}>
-      <span style={{ fontSize: 9.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.13em', color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
-        {label}
-      </span>
+    <div className="section-hd">
+      <span className="t-section">{label}</span>
       {action && (
-        <button
-          onClick={onAction}
-          style={{ fontSize: 10, color: 'var(--terra)', letterSpacing: '0.02em', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
-        >
+        <button onClick={onAction} className="section-hd-btn">
           {action}
         </button>
       )}

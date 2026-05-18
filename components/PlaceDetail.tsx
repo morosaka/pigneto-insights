@@ -37,10 +37,10 @@ interface InfoRowProps {
 }
 function InfoRow({ icon, text, href }: InfoRowProps) {
   const content = (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', borderBottom: '1px solid var(--avorio-dim)' }}>
-      <span style={{ fontSize: 14, width: 20, textAlign: 'center', flexShrink: 0, marginTop: 1 }}>{icon}</span>
-      <span style={{ fontSize: 13, color: 'var(--ciocco)', lineHeight: 1.4, fontFamily: 'var(--font-sans)', flex: 1 }}>{text}</span>
-      {href && <span style={{ fontSize: 12, color: 'var(--terra)', fontFamily: 'var(--font-sans)', flexShrink: 0, marginTop: 1 }}>›</span>}
+    <div className="info-row">
+      <span className="info-icon">{icon}</span>
+      <span className="info-text">{text}</span>
+      {href && <span className="info-arrow">›</span>}
     </div>
   );
   if (href) {
@@ -63,16 +63,7 @@ export function PlaceDetail({ place, onClose }: Props) {
   const color = catColor(place.category);
 
   return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'var(--avorio)',
-        zIndex: 20,
-        overflowY: 'auto',
-        overflowX: 'hidden',
-      }}
-    >
+    <div className="overlay overlay--avorio">
       {/* ── Photo / gradient header ─────────────────────── */}
       <div
         style={{
@@ -94,33 +85,13 @@ export function PlaceDetail({ place, onClose }: Props) {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 60%)' }} />
 
         {/* back button */}
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: 'calc(env(safe-area-inset-top, 0px) + 14px)',
-            left: 16,
-            zIndex: 10,
-            width: 36, height: 36,
-            borderRadius: '50%',
-            background: 'rgba(0,0,0,0.35)',
-            backdropFilter: 'blur(6px)',
-            border: 'none',
-            color: 'white',
-            fontSize: 18,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer',
-            fontFamily: 'var(--font-sans)',
-          }}
-        >
-          ←
-        </button>
+        <button onClick={onClose} className="back-btn">←</button>
 
         {/* name at bottom of header */}
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 18px 16px' }}>
           <div
             style={{
-              fontSize: 9, fontWeight: 500,
+              fontSize: 14, fontWeight: 500,
               textTransform: 'uppercase', letterSpacing: '0.14em',
               color: 'rgba(255,255,255,0.65)',
               marginBottom: 4, fontFamily: 'var(--font-sans)',
@@ -132,7 +103,7 @@ export function PlaceDetail({ place, onClose }: Props) {
           <h1
             style={{
               fontFamily: 'var(--font-serif)', fontStyle: 'italic',
-              fontWeight: 300, fontSize: 28, lineHeight: 1.1,
+              fontWeight: 300, fontSize: 28, lineHeight: 1.2,
               color: 'white', margin: 0,
             }}
           >
@@ -148,7 +119,7 @@ export function PlaceDetail({ place, onClose }: Props) {
         {place.description && (
           <p
             style={{
-              fontSize: 14, lineHeight: 1.65,
+              fontSize: 14, lineHeight: 1.4,
               color: 'var(--ciocco)',
               fontFamily: 'var(--font-sans)',
               marginBottom: 20,

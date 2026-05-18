@@ -4,37 +4,30 @@ import type { Place } from '@/lib/types';
 import { PlaceDetail } from '@/components/PlaceDetail';
 
 const CAT_COLOR: Record<string, string> = {
-  'Grocery':    'var(--oliva)',
-  'Market':     'var(--oliva)',
-  'Pharmacy':   'var(--ardesia)',
-  'Transport':  'var(--ardesia)',
-  'Laundry':    'var(--ardesia)',
-  'Tabacchi':   'var(--ciocco)',
-  'ATM':        'var(--ciocco)',
-  'Health':     'var(--ardesia)',
+  'Grocery':         'var(--oliva)',
+  'Market':          'var(--oliva)',
+  'Pharmacy':        'var(--ardesia)',
+  'Transit':         'var(--ardesia)',
+  'Laundry':         'var(--ardesia)',
+  'Phone & SIM':     'var(--ardesia)',
+  'Post & Shipping': 'var(--ciocco)',
+  'Luggage Storage': 'var(--ciocco)',
+  'Parking':         'var(--ciocco)',
+  'Rental':          'var(--terra)',
+  'Other':           'var(--avorio-dk)',
 };
-function catColor(cat: string) { return CAT_COLOR[cat] ?? 'var(--oliva)'; }
+function catColor(cat: string) { return CAT_COLOR[cat] ?? 'var(--avorio-dk)'; }
+
+const CATEGORY_ORDER = [
+  'Transit', 'Grocery', 'Market', 'Pharmacy',
+  'Laundry', 'Parking', 'Phone & SIM', 'Post & Shipping',
+  'Luggage Storage', 'Rental', 'Other',
+];
 
 function PlaceRow({ place, onTap }: { place: Place; onTap: () => void }) {
   return (
-    <button
-      onClick={onTap}
-      style={{
-        display: 'flex', alignItems: 'stretch', width: '100%',
-        padding: '12px 0',
-        background: 'none', border: 'none',
-        borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--avorio-dim)',
-        cursor: 'pointer', textAlign: 'left',
-        WebkitTapHighlightColor: 'transparent',
-      } as React.CSSProperties}
-    >
-      <div
-        style={{
-          width: 76, height: 90, borderRadius: 10,
-          flexShrink: 0, overflow: 'hidden',
-          marginRight: 14, background: 'var(--avorio-dim)',
-        }}
-      >
+    <button onClick={onTap} className="place-row">
+      <div className="place-thumb">
         {place.cover_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={place.cover_url} alt={place.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -42,65 +35,73 @@ function PlaceRow({ place, onTap }: { place: Place; onTap: () => void }) {
           <div style={{ width: '100%', height: '100%', background: `linear-gradient(160deg, var(--ardesia), var(--oliva))` }} />
         )}
       </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <div style={{ fontSize: 16, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.09em', color: catColor(place.category), marginBottom: 4, fontFamily: 'var(--font-sans)' }}>
+      <div className="place-body">
+        <div className="t-label" style={{ color: catColor(place.category), marginBottom: 4, textAlign: 'right', lineHeight: 1.4 }}>
           {place.category}{place.hours ? ` · ${place.hours}` : ''}
         </div>
-        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 28, color: 'var(--ciocco)', lineHeight: 1.15, marginBottom: 4 }}>
-          {place.name}
-        </div>
-        <div style={{ fontSize: 18, color: 'var(--avorio-dk)', fontFamily: 'var(--font-sans)' }}>
+        <div className="t-heading" style={{ marginBottom: 4 }}>{place.name}</div>
+        <div className="t-meta">
           {place.walk_minutes ? `${place.walk_minutes} min walk` : (place.address ?? '')}
         </div>
       </div>
-      <div style={{ fontSize: 20, color: 'var(--avorio-dim)', display: 'flex', alignItems: 'center', paddingLeft: 8 }}>›</div>
+      <div className="place-arrow">›</div>
     </button>
   );
 }
 
-interface Props {
-  places: Place[];
+function FilterChip({ label, active, onClick, color }: { label: string; active: boolean; onClick: () => void; color: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className="filter-chip"
+      style={active ? { background: color, borderColor: color, color: 'white' } : { border: `1px solid ${color}`, color }}
+    >
+      {label}
+    </button>
+  );
 }
 
+interface Props { places: Place[]; }
+
 export function EssentialsTab({ places }: Props) {
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
 
-  const grouped = places.reduce<Record<string, Place[]>>((acc, p) => {
-    if (!acc[p.category]) acc[p.category] = [];
-    acc[p.category].push(p);
-    return acc;
-  }, {});
-  const categoryOrder = Array.from(new Set(places.map(p => p.category)));
+  // categories present in data, in priority order
+  const presentCats = CATEGORY_ORDER.filter(c => places.some(p => p.category === c));
+  const unknownCats = Array.from(new Set(places.map(p => p.category))).filter(c => !CATEGORY_ORDER.includes(c));
+  const categories = [...presentCats, ...unknownCats];
+
+  const filtered = selected.size === 0 ? places : places.filter(p => selected.has(p.category));
+
+  function toggle(cat: string) {
+    setSelected(prev => {
+      const next = new Set(prev);
+      next.has(cat) ? next.delete(cat) : next.add(cat);
+      return next;
+    });
+  }
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: 'var(--avorio)', position: 'relative' }}>
 
-      {/* ── Header ─────────────────────────────────────────── */}
-      <div style={{ background: 'var(--ardesia)', padding: 'calc(env(safe-area-inset-top, 0px) + 1rem) 18px 14px', flexShrink: 0 }}>
-        <div style={{ fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'rgba(255,255,255,0.55)', marginBottom: 2, fontFamily: 'var(--font-sans)' }}>
-          Pigneto Insights
-        </div>
-        <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 22, color: 'var(--avorio)', lineHeight: 1.1 }}>
-          The Neighbourhood
-        </div>
+      <div className="tab-hd" style={{ background: 'var(--ardesia)' }}>
+        <div className="tab-hd-sub" style={{ color: 'rgba(255,255,255,0.55)' }}>Pigneto Insights</div>
+        <div className="t-title">The Neighbourhood</div>
       </div>
 
-      {/* ── Grouped list ───────────────────────────────────── */}
-      {categoryOrder.map(cat => (
-        <div key={cat}>
-          <div style={{ padding: '11px 18px 6px', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.13em', color: 'var(--avorio-dk)', background: 'hsl(37, 30%, 84%)', borderBottom: '1px solid var(--avorio-dim)', fontFamily: 'var(--font-sans)' }}>
-            {cat}
-          </div>
-          <div style={{ padding: '0 18px' }}>
-            {grouped[cat].map(p => <PlaceRow key={p.id} place={p} onTap={() => setSelectedPlace(p)} />)}
-          </div>
-        </div>
-      ))}
+      <div className="chip-wrap">
+        <FilterChip label="All" active={selected.size === 0} onClick={() => setSelected(new Set())} color="var(--ardesia)" />
+        {categories.map(cat => (
+          <FilterChip key={cat} label={cat} active={selected.has(cat)} onClick={() => toggle(cat)} color={catColor(cat)} />
+        ))}
+      </div>
 
-      {/* ── Detail overlay ─────────────────────────────────── */}
-      {selectedPlace && (
-        <PlaceDetail place={selectedPlace} onClose={() => setSelectedPlace(null)} />
-      )}
+      <div style={{ padding: '0 18px' }}>
+        {filtered.map(p => <PlaceRow key={p.id} place={p} onTap={() => setSelectedPlace(p)} />)}
+      </div>
+
+      {selectedPlace && <PlaceDetail place={selectedPlace} onClose={() => setSelectedPlace(null)} />}
     </div>
   );
 }
