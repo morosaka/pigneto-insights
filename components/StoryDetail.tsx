@@ -74,7 +74,7 @@ interface Props {
 }
 
 export function StoryDetail({ story, onClose }: Props) {
-  const readingTime = story.audio_time_min ?? story.reading_time_min;
+  const readingTime = story.narration_time_min ?? story.reading_time_min;
 
   return (
     <div className="overlay overlay--white">
