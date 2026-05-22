@@ -51,6 +51,23 @@ function ShortCard({ short }: { short: IssueShort }) {
   );
 }
 
+// ── weekly podcast player ─────────────────────────────────────────────────────
+function IssueAudioPlayer({ audioUrl, durationMin }: { audioUrl: string; durationMin: number | null }) {
+  return (
+    <div style={{ margin: '20px 20px 0' }}>
+      <div style={{
+        fontSize: 11, fontFamily: 'var(--font-sans)', fontWeight: 600,
+        letterSpacing: '0.08em', textTransform: 'uppercase',
+        color: 'var(--ardesia)', marginBottom: 10,
+      }}>
+        🎙 Weekly Podcast{durationMin ? ` · ${durationMin} min` : ''}
+      </div>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio controls src={audioUrl} style={{ width: '100%', borderRadius: 8 }} />
+    </div>
+  );
+}
+
 // ── discovery card (place or evergreen) ───────────────────────────────────────
 function DiscoveryPlaceCard({ place, onTap }: { place: Place; onTap: () => void }) {
   return (
@@ -190,6 +207,11 @@ export function IssueView({ issue, shorts, deepRead, discoveryPlaces, discoveryE
       <div style={{ padding: '24px 20px 0' }}>
         {renderMd(issue.lead_body_md)}
       </div>
+
+      {/* ── Weekly Podcast ─────────────────────────────────────── */}
+      {issue.audio_url && (
+        <IssueAudioPlayer audioUrl={issue.audio_url} durationMin={issue.audio_duration_min ?? null} />
+      )}
 
       {/* ── Alerts ─────────────────────────────────────────────── */}
       {issue.alerts_md && (

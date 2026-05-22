@@ -101,6 +101,8 @@ export interface WeeklyIssue {
   lead_cover_url: string | null;
   alerts_md: string | null;
   weather_md: string | null;
+  audio_url: string | null;          // NotebookLM deep-dive podcast (English, this sprint)
+  audio_duration_min: number | null;
   published: boolean;
   created_at: string;
   updated_at: string;
