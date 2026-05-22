@@ -68,50 +68,119 @@ function IssueAudioPlayer({ audioUrl, durationMin }: { audioUrl: string; duratio
   );
 }
 
-// ── discovery card (place or evergreen) ───────────────────────────────────────
-function DiscoveryPlaceCard({ place, onTap }: { place: Place; onTap: () => void }) {
-  return (
-    <button onClick={onTap}
-      style={{
-        width: '100%', textAlign: 'left', background: 'white',
-        border: '1px solid var(--avorio-dim)', borderRadius: 12, padding: '14px 16px',
-        marginBottom: 10, cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-      } as React.CSSProperties}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-        <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 17, color: 'var(--ciocco)' }}>
-          {place.name}
-        </span>
-        <span style={{ fontSize: 12, color: 'var(--terra)', fontFamily: 'var(--font-sans)' }}>
-          {place.category}
-        </span>
-      </div>
-      {place.editorial_intro_md && (
-        <p style={{ fontSize: 14, lineHeight: 1.45, color: 'var(--ciocco)', fontFamily: 'var(--font-sans)', margin: 0 }}>
-          {place.editorial_intro_md}
-        </p>
-      )}
-    </button>
-  );
+// ── discovery carousel ────────────────────────────────────────────────────────
+
+type DiscoveryItem =
+  | { kind: 'place'; data: Place; index: number }
+  | { kind: 'evergreen'; data: EvergreenItem; index: number };
+
+const ACCENT_SWATCHES = [
+  { bg: 'rgba(193,120,60,0.09)', accent: 'var(--terra)' },
+  { bg: 'rgba(90,105,65,0.09)', accent: 'var(--oliva)' },
+  { bg: 'rgba(80,90,105,0.09)', accent: 'var(--ardesia)' },
+  { bg: 'rgba(166,59,38,0.09)', accent: 'var(--pompei)' },
+  { bg: 'rgba(101,75,55,0.09)', accent: 'var(--ciocco)' },
+];
+
+function CategoryIcon({ category, color }: { category: string; color: string }) {
+  const s = { stroke: color, strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, fill: 'none' };
+  const c = category.toLowerCase();
+  let icon: React.ReactNode;
+  if (c.includes('café') || c.includes('cafe') || c.includes('caffè') || c.includes('coffee')) {
+    icon = <>
+      <path d="M 8,8 L 8,20 Q 8,24 16,24 Q 24,24 24,20 L 24,8 Z" {...s} />
+      <path d="M 24,12 Q 29,12 29,16 Q 29,20 24,20" {...s} />
+      <line x1="6" y1="27" x2="26" y2="27" {...s} />
+    </>;
+  } else if (c.includes('wine') || c.includes('brewery') || c.includes('beer') || c.includes('gastropub')) {
+    icon = <>
+      <path d="M 9,4 L 23,4 L 21,15 Q 21,20 16,20 Q 11,20 11,15 Z" {...s} />
+      <line x1="16" y1="20" x2="16" y2="26" {...s} />
+      <line x1="11" y1="26" x2="21" y2="26" {...s} />
+    </>;
+  } else if (c.includes('gelat') || c.includes('ice')) {
+    icon = <>
+      <path d="M 10,12 Q 10,4 16,4 Q 22,4 22,12 Q 22,18 16,20 Q 10,18 10,12 Z" {...s} />
+      <path d="M 13,20 L 16,28 L 19,20" {...s} />
+    </>;
+  } else if (c.includes('market') || c.includes('grocery') || c.includes('mercato')) {
+    icon = <>
+      <path d="M 7,8 L 5,4 M 7,8 L 25,8 L 23,20 Q 23,22 21,22 L 11,22 Q 9,22 9,20 Z" {...s} />
+      <circle cx="13" cy="25" r="1.5" {...s} />
+      <circle cx="19" cy="25" r="1.5" {...s} />
+    </>;
+  } else if (c.includes('club') || c.includes('bar')) {
+    icon = <>
+      <path d="M 8,22 Q 8,8 16,6 Q 24,8 24,22" {...s} />
+      <line x1="8" y1="22" x2="24" y2="22" {...s} />
+      <line x1="16" y1="22" x2="16" y2="27" {...s} />
+      <line x1="11" y1="27" x2="21" y2="27" {...s} />
+    </>;
+  } else if (c.includes('restaurant') || c.includes('trattoria') || c.includes('pizzeria') || c.includes('steak') || c.includes('seafood') || c.includes('japanese') || c.includes('international') || c.includes('street')) {
+    icon = <>
+      <line x1="11" y1="4" x2="11" y2="28" {...s} />
+      <path d="M 9,4 L 9,13 Q 9,16 11,16 Q 13,16 13,13 L 13,4" {...s} />
+      <path d="M 21,4 Q 26,9 21,15 L 21,28" {...s} />
+    </>;
+  } else {
+    icon = <>
+      <path d="M 16,4 Q 26,10 22,22 Q 19,17 16,18 Q 13,17 10,22 Q 6,10 16,4" {...s} />
+      <line x1="16" y1="18" x2="16" y2="28" {...s} />
+    </>;
+  }
+  return <svg viewBox="0 0 32 32" width="48" height="48" style={{ opacity: 0.6 }}>{icon}</svg>;
 }
 
-function DiscoveryEvergreenCard({ item, onTap }: { item: EvergreenItem; onTap: () => void }) {
+function DiscoveryCarouselCard({ item, onTap }: { item: DiscoveryItem; onTap: () => void }) {
+  const swatch = ACCENT_SWATCHES[item.index % ACCENT_SWATCHES.length];
+  const category = item.kind === 'place' ? item.data.category : 'Roma Evergreen';
+  const title = item.kind === 'place' ? item.data.name : item.data.title;
+  const teaser = item.kind === 'place' ? item.data.editorial_intro_md : item.data.editorial_intro_md;
+
   return (
-    <button onClick={onTap}
-      style={{
-        width: '100%', textAlign: 'left', background: 'white',
-        border: '1px solid var(--avorio-dim)', borderRadius: 12, padding: '14px 16px',
-        marginBottom: 10, cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-      } as React.CSSProperties}>
-      <div style={{ marginBottom: 6 }}>
-        <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 17, color: 'var(--ciocco)' }}>
-          {item.title}
+    <button onClick={onTap} style={{
+      flex: '0 0 calc(100vw - 56px)', scrollSnapAlign: 'start',
+      background: 'white', border: '1px solid var(--avorio-dim)',
+      borderRadius: 14, overflow: 'hidden',
+      cursor: 'pointer', textAlign: 'left', padding: 0,
+      WebkitTapHighlightColor: 'transparent',
+    } as React.CSSProperties}>
+      {/* illustration zone */}
+      <div style={{
+        height: 148, background: swatch.bg,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        borderBottom: '1px solid rgba(0,0,0,0.04)',
+      }}>
+        <CategoryIcon category={category} color={swatch.accent} />
+      </div>
+      {/* content zone */}
+      <div style={{ padding: '13px 15px 15px' }}>
+        <div style={{
+          fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
+          textTransform: 'uppercase', color: swatch.accent,
+          fontFamily: 'var(--font-sans)', marginBottom: 5,
+        }}>
+          {category}
+        </div>
+        <div style={{
+          fontFamily: 'var(--font-serif)', fontStyle: 'italic',
+          fontSize: 18, lineHeight: 1.25, color: 'var(--ciocco)', marginBottom: 8,
+        }}>
+          {title}
+        </div>
+        {teaser && (
+          <p style={{
+            fontSize: 13, lineHeight: 1.45, color: 'var(--ardesia)',
+            fontFamily: 'var(--font-sans)', margin: '0 0 10px',
+            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+          } as React.CSSProperties}>
+            {teaser}
+          </p>
+        )}
+        <span style={{ fontSize: 12, color: swatch.accent, fontFamily: 'var(--font-sans)', letterSpacing: '0.04em' }}>
+          Read more ›
         </span>
       </div>
-      {item.editorial_intro_md && (
-        <p style={{ fontSize: 14, lineHeight: 1.45, color: 'var(--ciocco)', fontFamily: 'var(--font-sans)', margin: 0 }}>
-          {item.editorial_intro_md}
-        </p>
-      )}
     </button>
   );
 }
@@ -202,27 +271,25 @@ export function IssueView({ issue, shorts, deepRead, discoveryPlaces, discoveryE
             </p>
           )}
 
-          {/* issue date */}
-          <span style={{ fontSize: 12, color: 'rgba(232,218,198,0.4)', fontFamily: 'var(--font-sans)', letterSpacing: '0.06em' }}>
-            {new Date(issue.issue_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-          </span>
-        </div>
-
-        {/* read article affordance */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          marginTop: 20, paddingTop: 16,
-          borderTop: '1px solid rgba(232,218,198,0.12)',
-          color: 'rgba(232,218,198,0.55)',
-          fontFamily: 'var(--font-sans)', fontSize: 12, letterSpacing: '0.08em',
-        }}>
-          <span style={{
-            display: 'inline-block',
-            transform: articleExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform 250ms ease',
-            fontSize: 14, lineHeight: 1,
-          }}>▾</span>
-          <span>{articleExpanded ? 'Hide article' : 'Read article'}</span>
+          {/* issue date + read article affordance */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 12, color: 'rgba(232,218,198,0.4)', fontFamily: 'var(--font-sans)', letterSpacing: '0.06em' }}>
+              {new Date(issue.issue_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </span>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              color: 'rgba(232,218,198,0.55)',
+              fontFamily: 'var(--font-sans)', fontSize: 12, letterSpacing: '0.08em',
+            }}>
+              <span>{articleExpanded ? 'Hide article' : 'Read article'}</span>
+              <span style={{
+                display: 'inline-block',
+                transform: articleExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 250ms ease',
+                fontSize: 14, lineHeight: 1,
+              }}>▾</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -279,14 +346,25 @@ export function IssueView({ issue, shorts, deepRead, discoveryPlaces, discoveryE
 
       {/* ── Discoveries ────────────────────────────────────────── */}
       {hasDiscoveries && (
-        <div style={{ padding: '0 20px' }}>
-          <SectionLabel label="This week we found" accent="var(--terra)" />
-          {discoveryPlaces.map(p => (
-            <DiscoveryPlaceCard key={p.id} place={p} onTap={() => setSelectedPlace(p)} />
-          ))}
-          {discoveryEvergreen.map(e => (
-            <DiscoveryEvergreenCard key={e.id} item={e} onTap={() => setSelectedEvergreen(e)} />
-          ))}
+        <div>
+          <div style={{ padding: '0 20px' }}>
+            <SectionLabel label="This week we found" accent="var(--terra)" />
+          </div>
+          <div className="hscroll" style={{
+            display: 'flex', scrollSnapType: 'x mandatory',
+            gap: 12, paddingLeft: 20, paddingRight: 20, paddingBottom: 16,
+          }}>
+            {[
+              ...discoveryPlaces.map((p, i) => ({ kind: 'place' as const, data: p, index: i })),
+              ...discoveryEvergreen.map((e, i) => ({ kind: 'evergreen' as const, data: e, index: discoveryPlaces.length + i })),
+            ].map(item => (
+              <DiscoveryCarouselCard
+                key={item.kind === 'place' ? `p-${item.data.id}` : `e-${item.data.id}`}
+                item={item}
+                onTap={() => item.kind === 'place' ? setSelectedPlace(item.data) : setSelectedEvergreen(item.data)}
+              />
+            ))}
+          </div>
         </div>
       )}
 
