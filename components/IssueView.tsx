@@ -143,6 +143,7 @@ interface Props {
 export function IssueView({ issue, shorts, deepRead, discoveryPlaces, discoveryEvergreen, standalone = false }: Props) {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [selectedEvergreen, setSelectedEvergreen] = useState<EvergreenItem | null>(null);
+  const [articleExpanded, setArticleExpanded] = useState(false);
 
   const hasDiscoveries = discoveryPlaces.length > 0 || discoveryEvergreen.length > 0;
 
@@ -155,13 +156,18 @@ export function IssueView({ issue, shorts, deepRead, discoveryPlaces, discoveryE
     }}>
 
       {/* ── Lead Hero ──────────────────────────────────────────── */}
-      <div style={{
-        background: 'linear-gradient(162deg, var(--ciocco) 0%, var(--pompei) 55%, hsl(20,50%,42%) 100%)',
-        padding: standalone
-          ? '80px 20px 32px'
-          : 'calc(env(safe-area-inset-top, 0px) + 2.5rem) 20px 32px',
-        position: 'relative', flexShrink: 0,
-      }}>
+      <div
+        role="button"
+        aria-expanded={articleExpanded}
+        onClick={() => setArticleExpanded(prev => !prev)}
+        style={{
+          background: 'linear-gradient(162deg, var(--ciocco) 0%, var(--pompei) 55%, hsl(20,50%,42%) 100%)',
+          padding: standalone
+            ? '80px 20px 32px'
+            : 'calc(env(safe-area-inset-top, 0px) + 2.5rem) 20px 32px',
+          position: 'relative', flexShrink: 0,
+          cursor: 'pointer', userSelect: 'none',
+        }}>
         {/* grain overlay */}
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.5,
@@ -201,11 +207,35 @@ export function IssueView({ issue, shorts, deepRead, discoveryPlaces, discoveryE
             {new Date(issue.issue_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
           </span>
         </div>
+
+        {/* read article affordance */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          marginTop: 20, paddingTop: 16,
+          borderTop: '1px solid rgba(232,218,198,0.12)',
+          color: 'rgba(232,218,198,0.55)',
+          fontFamily: 'var(--font-sans)', fontSize: 12, letterSpacing: '0.08em',
+        }}>
+          <span style={{
+            display: 'inline-block',
+            transform: articleExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 250ms ease',
+            fontSize: 14, lineHeight: 1,
+          }}>▾</span>
+          <span>{articleExpanded ? 'Hide article' : 'Read article'}</span>
+        </div>
       </div>
 
       {/* ── Lead Body ──────────────────────────────────────────── */}
-      <div style={{ padding: '24px 20px 0' }}>
-        {renderMd(issue.lead_body_md)}
+      <div style={{
+        overflow: 'hidden',
+        maxHeight: articleExpanded ? '2000px' : '0px',
+        opacity: articleExpanded ? 1 : 0,
+        transition: 'max-height 350ms ease, opacity 250ms ease',
+      }}>
+        <div style={{ padding: '24px 20px 8px' }}>
+          {renderMd(issue.lead_body_md)}
+        </div>
       </div>
 
       {/* ── Weekly Podcast ─────────────────────────────────────── */}
