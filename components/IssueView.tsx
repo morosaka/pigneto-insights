@@ -54,7 +54,7 @@ function stripSourceLines(md: string): string {
 }
 
 // ── short event card ──────────────────────────────────────────────────────────
-function ShortCard({ short }: { short: IssueShort }) {
+function ShortCard({ short, isFirst }: { short: IssueShort; isFirst?: boolean }) {
   const img = short.image_url ? (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -65,7 +65,7 @@ function ShortCard({ short }: { short: IssueShort }) {
   ) : null;
 
   return (
-    <div style={{ padding: '4px 0 14px', borderBottom: '1px solid var(--avorio-dim)' }}>
+    <div style={{ padding: `${isFirst ? 0 : 14}px 0 14px`, borderBottom: '1px solid var(--avorio-dim)' }}>
       {short.image_position === 'above' && img}
       <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 26, lineHeight: 1.15, color: 'var(--ciocco)', marginBottom: 12 }}>
         {short.title}
@@ -334,7 +334,7 @@ export function IssueView({ issue, shorts, deepRead, discoveryPlaces, discoveryE
       {shorts.length > 0 && (
         <div style={{ padding: '0 20px' }}>
           <SectionLabel label="This week" accent="var(--oliva)" />
-          {shorts.map(s => <ShortCard key={s.id} short={s} />)}
+          {shorts.map((s, i) => <ShortCard key={s.id} short={s} isFirst={i === 0} />)}
         </div>
       )}
 
