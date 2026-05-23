@@ -116,6 +116,7 @@ export interface IssueShort {
   date_label: string | null;           // es. "Wed 21 – Sat 24"
   location: string | null;
   external_url: string | null;
+  image_url: string | null;
   sort_order: number;
   created_at: string;
 }

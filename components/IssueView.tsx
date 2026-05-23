@@ -30,6 +30,13 @@ function renderMd(md: string) {
 function ShortCard({ short }: { short: IssueShort }) {
   return (
     <div style={{ padding: '14px 0', borderBottom: '1px solid var(--avorio-dim)' }}>
+      {short.image_url && (
+        <img
+          src={short.image_url}
+          alt={short.title}
+          style={{ width: '100%', borderRadius: 8, marginBottom: 12, display: 'block', objectFit: 'cover', maxHeight: 200 }}
+        />
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6, gap: 8 }}>
         <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 17, color: 'var(--ciocco)', lineHeight: 1.2 }}>
           {short.title}
@@ -301,7 +308,24 @@ export function IssueView({ issue, shorts, deepRead, discoveryPlaces, discoveryE
         transition: 'max-height 350ms ease, opacity 250ms ease',
       }}>
         <div style={{ padding: '24px 20px 8px' }}>
-          {renderMd(issue.lead_body_md)}
+          {(() => {
+            const blocks = issue.lead_body_md.split(/\n{2,}/);
+            const first = blocks.slice(0, 1);
+            const rest = blocks.slice(1);
+            return (
+              <>
+                {renderMd(first.join('\n\n'))}
+                {issue.lead_cover_url && (
+                  <img
+                    src={issue.lead_cover_url}
+                    alt={issue.lead_title}
+                    style={{ width: '100%', borderRadius: 10, margin: '16px 0', display: 'block' }}
+                  />
+                )}
+                {rest.length > 0 && renderMd(rest.join('\n\n'))}
+              </>
+            );
+          })()}
         </div>
       </div>
 
