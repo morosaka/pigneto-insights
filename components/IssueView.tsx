@@ -314,17 +314,12 @@ export function IssueView({ issue, shorts, deepRead, discoveryPlaces, discoveryE
 
       {/* ── Alerts ─────────────────────────────────────────────── */}
       {issue.alerts_md && (
-        <div style={{ margin: '8px 20px 0' }}>
+        <div style={{ padding: '0 20px' }}>
+          <SectionLabel label="⚠ Transport & closures" accent="var(--pompei)" />
           <div style={{
             background: 'rgba(166,59,38,0.08)', border: '1px solid rgba(166,59,38,0.2)',
             borderRadius: 10, padding: '12px 16px',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-              <span style={{ fontSize: 14 }}>⚠️</span>
-              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--pompei)', fontFamily: 'var(--font-sans)' }}>
-                Transport & closures
-              </span>
-            </div>
             {renderMd(issue.alerts_md)}
           </div>
         </div>
