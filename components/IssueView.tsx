@@ -57,23 +57,21 @@ function stripSourceLines(md: string): string {
 function ShortCard({ short }: { short: IssueShort }) {
   return (
     <div style={{ padding: '14px 0', borderBottom: '1px solid var(--avorio-dim)' }}>
+      <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 26, lineHeight: 1.15, color: 'var(--ciocco)', marginBottom: 12 }}>
+        {short.title}
+      </div>
       {short.image_url && (
         <img
           src={short.image_url}
           alt={short.title}
-          style={{ width: '100%', borderRadius: 8, marginBottom: 12, display: 'block', objectFit: 'cover', maxHeight: 200 }}
+          style={{ width: '100%', borderRadius: 8, marginBottom: 10, display: 'block', objectFit: 'cover', maxHeight: 220 }}
         />
       )}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6, gap: 8 }}>
-        <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 17, color: 'var(--ciocco)', lineHeight: 1.2 }}>
-          {short.title}
-        </span>
-        {short.date_label && (
-          <span style={{ fontSize: 12, color: 'var(--terra)', fontFamily: 'var(--font-sans)', whiteSpace: 'nowrap', flexShrink: 0 }}>
-            {short.date_label}
-          </span>
-        )}
-      </div>
+      {short.date_label && (
+        <div style={{ fontSize: 12, color: 'var(--terra)', fontFamily: 'var(--font-sans)', marginBottom: 10, textAlign: 'right' }}>
+          {short.date_label}
+        </div>
+      )}
       {renderMd(stripSourceLines(short.body_md))}
       {short.external_url && (
         <a href={short.external_url} target="_blank" rel="noopener noreferrer"
