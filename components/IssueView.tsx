@@ -70,13 +70,14 @@ function ShortCard({ short }: { short: IssueShort }) {
       <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 26, lineHeight: 1.15, color: 'var(--ciocco)', marginBottom: 12 }}>
         {short.title}
       </div>
-      {short.image_position !== 'above' && img}
+      {short.image_position === 'middle' && img}
       {short.date_label && (
         <div style={{ fontSize: 12, color: 'var(--terra)', fontFamily: 'var(--font-sans)', marginBottom: 10, textAlign: 'right' }}>
           {short.date_label}
         </div>
       )}
       {renderMd(stripSourceLines(short.body_md))}
+      {short.image_position === 'below' && img}
       {short.external_url && (
         <a href={short.external_url} target="_blank" rel="noopener noreferrer"
           style={{ fontSize: 12, color: 'var(--ardesia)', fontFamily: 'var(--font-sans)', textDecoration: 'none' }}>
