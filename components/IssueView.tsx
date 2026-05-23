@@ -26,6 +26,18 @@ function renderMd(md: string) {
   });
 }
 
+function sourceDomain(url: string): string {
+  try { return new URL(url).hostname.replace(/^www\./, ''); }
+  catch { return url; }
+}
+
+function stripSourceLines(md: string): string {
+  return md
+    .split(/\n{2,}/)
+    .filter(block => !block.trim().startsWith('Source:'))
+    .join('\n\n');
+}
+
 // ── short event card ──────────────────────────────────────────────────────────
 function ShortCard({ short }: { short: IssueShort }) {
   return (
@@ -47,11 +59,11 @@ function ShortCard({ short }: { short: IssueShort }) {
           </span>
         )}
       </div>
-      {renderMd(short.body_md)}
+      {renderMd(stripSourceLines(short.body_md))}
       {short.external_url && (
         <a href={short.external_url} target="_blank" rel="noopener noreferrer"
           style={{ fontSize: 12, color: 'var(--ardesia)', fontFamily: 'var(--font-sans)', textDecoration: 'none' }}>
-          More info ↗
+          {sourceDomain(short.external_url)} ↗
         </a>
       )}
     </div>
