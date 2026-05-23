@@ -130,6 +130,7 @@ export interface IssueShort {
   location: string | null;
   external_url: string | null;
   image_url: string | null;
+  image_position: 'above' | 'below';  // 'above' = before title, 'below' = after title (default)
   sort_order: number;
   created_at: string;
 }

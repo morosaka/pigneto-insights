@@ -55,18 +55,22 @@ function stripSourceLines(md: string): string {
 
 // ── short event card ──────────────────────────────────────────────────────────
 function ShortCard({ short }: { short: IssueShort }) {
+  const img = short.image_url ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={short.image_url}
+      alt={short.title}
+      style={{ width: '100%', borderRadius: 8, marginBottom: 10, display: 'block', objectFit: 'cover', maxHeight: 220 }}
+    />
+  ) : null;
+
   return (
     <div style={{ padding: '14px 0', borderBottom: '1px solid var(--avorio-dim)' }}>
+      {short.image_position === 'above' && img}
       <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 26, lineHeight: 1.15, color: 'var(--ciocco)', marginBottom: 12 }}>
         {short.title}
       </div>
-      {short.image_url && (
-        <img
-          src={short.image_url}
-          alt={short.title}
-          style={{ width: '100%', borderRadius: 8, marginBottom: 10, display: 'block', objectFit: 'cover', maxHeight: 220 }}
-        />
-      )}
+      {short.image_position !== 'above' && img}
       {short.date_label && (
         <div style={{ fontSize: 12, color: 'var(--terra)', fontFamily: 'var(--font-sans)', marginBottom: 10, textAlign: 'right' }}>
           {short.date_label}
