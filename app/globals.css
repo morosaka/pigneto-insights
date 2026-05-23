@@ -253,7 +253,7 @@ body {
 /* ── Overlay panels ──────────────────────────────────────────────────────── */
 
 .overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   overflow-y: auto;
   overflow-x: hidden;

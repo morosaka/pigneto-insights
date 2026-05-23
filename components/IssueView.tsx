@@ -94,67 +94,28 @@ type DiscoveryItem =
   | { kind: 'evergreen'; data: EvergreenItem; index: number };
 
 const ACCENT_SWATCHES = [
-  { bg: 'rgba(193,120,60,0.09)', accent: 'var(--terra)' },
-  { bg: 'rgba(90,105,65,0.09)', accent: 'var(--oliva)' },
-  { bg: 'rgba(80,90,105,0.09)', accent: 'var(--ardesia)' },
-  { bg: 'rgba(166,59,38,0.09)', accent: 'var(--pompei)' },
-  { bg: 'rgba(101,75,55,0.09)', accent: 'var(--ciocco)' },
+  { bg: 'linear-gradient(160deg, var(--ciocco), var(--terra))', accent: 'var(--terra)' },
+  { bg: 'linear-gradient(160deg, var(--ardesia), var(--oliva))', accent: 'var(--oliva)' },
+  { bg: 'linear-gradient(160deg, var(--pompei), var(--ciocco))', accent: 'var(--pompei)' },
+  { bg: 'linear-gradient(160deg, var(--oliva), var(--ardesia))', accent: 'var(--ardesia)' },
+  { bg: 'linear-gradient(160deg, var(--terra), var(--pompei))', accent: 'var(--ciocco)' },
 ];
 
-function CategoryIcon({ category, color }: { category: string; color: string }) {
-  const s = { stroke: color, strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, fill: 'none' };
-  const c = category.toLowerCase();
-  let icon: React.ReactNode;
-  if (c.includes('café') || c.includes('cafe') || c.includes('caffè') || c.includes('coffee')) {
-    icon = <>
-      <path d="M 8,8 L 8,20 Q 8,24 16,24 Q 24,24 24,20 L 24,8 Z" {...s} />
-      <path d="M 24,12 Q 29,12 29,16 Q 29,20 24,20" {...s} />
-      <line x1="6" y1="27" x2="26" y2="27" {...s} />
-    </>;
-  } else if (c.includes('wine') || c.includes('brewery') || c.includes('beer') || c.includes('gastropub')) {
-    icon = <>
-      <path d="M 9,4 L 23,4 L 21,15 Q 21,20 16,20 Q 11,20 11,15 Z" {...s} />
-      <line x1="16" y1="20" x2="16" y2="26" {...s} />
-      <line x1="11" y1="26" x2="21" y2="26" {...s} />
-    </>;
-  } else if (c.includes('gelat') || c.includes('ice')) {
-    icon = <>
-      <path d="M 10,12 Q 10,4 16,4 Q 22,4 22,12 Q 22,18 16,20 Q 10,18 10,12 Z" {...s} />
-      <path d="M 13,20 L 16,28 L 19,20" {...s} />
-    </>;
-  } else if (c.includes('market') || c.includes('grocery') || c.includes('mercato')) {
-    icon = <>
-      <path d="M 7,8 L 5,4 M 7,8 L 25,8 L 23,20 Q 23,22 21,22 L 11,22 Q 9,22 9,20 Z" {...s} />
-      <circle cx="13" cy="25" r="1.5" {...s} />
-      <circle cx="19" cy="25" r="1.5" {...s} />
-    </>;
-  } else if (c.includes('club') || c.includes('bar')) {
-    icon = <>
-      <path d="M 8,22 Q 8,8 16,6 Q 24,8 24,22" {...s} />
-      <line x1="8" y1="22" x2="24" y2="22" {...s} />
-      <line x1="16" y1="22" x2="16" y2="27" {...s} />
-      <line x1="11" y1="27" x2="21" y2="27" {...s} />
-    </>;
-  } else if (c.includes('restaurant') || c.includes('trattoria') || c.includes('pizzeria') || c.includes('steak') || c.includes('seafood') || c.includes('japanese') || c.includes('international') || c.includes('street')) {
-    icon = <>
-      <line x1="11" y1="4" x2="11" y2="28" {...s} />
-      <path d="M 9,4 L 9,13 Q 9,16 11,16 Q 13,16 13,13 L 13,4" {...s} />
-      <path d="M 21,4 Q 26,9 21,15 L 21,28" {...s} />
-    </>;
-  } else {
-    icon = <>
-      <path d="M 16,4 Q 26,10 22,22 Q 19,17 16,18 Q 13,17 10,22 Q 6,10 16,4" {...s} />
-      <line x1="16" y1="18" x2="16" y2="28" {...s} />
-    </>;
-  }
-  return <svg viewBox="0 0 32 32" width="48" height="48" style={{ opacity: 0.6 }}>{icon}</svg>;
+function firstSentence(text: string, maxChars = 120): string {
+  const m = text.match(/^.{20,}?[.!?]/);
+  if (m && m[0].length <= maxChars) return m[0];
+  if (text.length <= maxChars) return text;
+  return text.slice(0, maxChars).replace(/\s\S+$/, '…');
 }
 
 function DiscoveryCarouselCard({ item, onTap }: { item: DiscoveryItem; onTap: () => void }) {
   const swatch = ACCENT_SWATCHES[item.index % ACCENT_SWATCHES.length];
   const category = item.kind === 'place' ? item.data.category : 'Roma Evergreen';
   const title = item.kind === 'place' ? item.data.name : item.data.title;
-  const teaser = item.kind === 'place' ? item.data.editorial_intro_md : item.data.editorial_intro_md;
+  const coverUrl = item.kind === 'place' ? item.data.cover_url : item.data.cover_url;
+  const caption = item.kind === 'place'
+    ? item.data.description
+    : item.data.editorial_intro_md;
 
   return (
     <button onClick={onTap} style={{
@@ -164,36 +125,45 @@ function DiscoveryCarouselCard({ item, onTap }: { item: DiscoveryItem; onTap: ()
       cursor: 'pointer', textAlign: 'left', padding: 0,
       WebkitTapHighlightColor: 'transparent',
     } as React.CSSProperties}>
-      {/* illustration zone */}
+      {/* image zone */}
       <div style={{
-        height: 148, background: swatch.bg,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        borderBottom: '1px solid rgba(0,0,0,0.04)',
+        height: 180, position: 'relative', flexShrink: 0,
+        background: swatch.bg,
       }}>
-        <CategoryIcon category={category} color={swatch.accent} />
+        {coverUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={coverUrl}
+            alt={title}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        )}
+        {/* category pill */}
+        <div style={{
+          position: 'absolute', bottom: 10, left: 12,
+          fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: 'white', fontFamily: 'var(--font-sans)',
+          background: 'rgba(0,0,0,0.38)', backdropFilter: 'blur(4px)',
+          padding: '3px 8px', borderRadius: 20,
+        }}>
+          {category}
+        </div>
       </div>
       {/* content zone */}
       <div style={{ padding: '13px 15px 15px' }}>
         <div style={{
-          fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
-          textTransform: 'uppercase', color: swatch.accent,
-          fontFamily: 'var(--font-sans)', marginBottom: 5,
-        }}>
-          {category}
-        </div>
-        <div style={{
           fontFamily: 'var(--font-serif)', fontStyle: 'italic',
-          fontSize: 18, lineHeight: 1.25, color: 'var(--ciocco)', marginBottom: 8,
+          fontSize: 18, lineHeight: 1.25, color: 'var(--ciocco)', marginBottom: 7,
         }}>
           {title}
         </div>
-        {teaser && (
+        {caption && (
           <p style={{
             fontSize: 13, lineHeight: 1.45, color: 'var(--ardesia)',
             fontFamily: 'var(--font-sans)', margin: '0 0 10px',
-            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-          } as React.CSSProperties}>
-            {teaser}
+          }}>
+            {firstSentence(caption)}
           </p>
         )}
         <span style={{ fontSize: 12, color: swatch.accent, fontFamily: 'var(--font-sans)', letterSpacing: '0.04em' }}>

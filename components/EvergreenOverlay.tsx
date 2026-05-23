@@ -41,7 +41,7 @@ export function EvergreenOverlay({ tag, items, onClose }: Props) {
   const [selected, setSelected] = useState<EvergreenItem | null>(null);
 
   return (
-    <div style={{ position: 'absolute', inset: 0, background: 'var(--avorio)', zIndex: 20, overflowY: 'auto', overflowX: 'hidden' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'var(--avorio)', zIndex: 20, overflowY: 'auto', overflowX: 'hidden' }}>
 
       {/* ── Header ─────────────────────────────────────── */}
       <div

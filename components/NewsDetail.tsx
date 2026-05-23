@@ -32,7 +32,7 @@ export function NewsDetail({ item, onClose }: Props) {
   return (
     <div
       style={{
-        position: 'absolute',
+        position: 'fixed',
         inset: 0,
         background: 'var(--avorio)',
         zIndex: 20,

@@ -17,15 +17,25 @@ export interface Place {
   phone: string | null;
   website: string | null;
   social_url: string | null;
+  instagram_url: string | null;
   video_url: string | null;
   cover_url: string | null;
   gallery_url: string | null;
+  gallery_urls: string[];
   cover_eligible: boolean;
   active: boolean;
   // Editorial / Discovery fields (migration 001)
   editorial_intro_md: string | null;
   featured_in_issue_id: string | null;
   featured_until: string | null;       // ISO date
+  // Rich compendium fields (migration 004)
+  google_rating: number | null;
+  google_review_count: number | null;
+  google_maps_url: string | null;
+  booking_url: string | null;
+  menu_url: string | null;
+  delivery_url: string | null;
+  tags: string[];
 }
 
 // ────────────────────────────────────────────────────────────
@@ -85,6 +95,8 @@ export interface EvergreenItem {
   editorial_intro_md: string | null;
   featured_in_issue_id: string | null;
   featured_until: string | null;       // ISO date
+  // Rich fields (migration 004)
+  cover_url: string | null;
 }
 
 // ────────────────────────────────────────────────────────────
