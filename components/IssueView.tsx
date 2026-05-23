@@ -65,7 +65,7 @@ function ShortCard({ short }: { short: IssueShort }) {
   ) : null;
 
   return (
-    <div style={{ padding: '14px 0', borderBottom: '1px solid var(--avorio-dim)' }}>
+    <div style={{ padding: '4px 0 14px', borderBottom: '1px solid var(--avorio-dim)' }}>
       {short.image_position === 'above' && img}
       <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 26, lineHeight: 1.15, color: 'var(--ciocco)', marginBottom: 12 }}>
         {short.title}
