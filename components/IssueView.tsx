@@ -6,12 +6,27 @@ import { EvergreenDetail } from '@/components/EvergreenDetail';
 import { DeepReadCard } from '@/components/DeepReadCard';
 import Link from 'next/link';
 
-// ── markdown renderer (paragraphs, bold, italic, hr) ──────────────────────────
+// ── markdown renderer (paragraphs, bold, italic, hr, inline images) ──────────
 function renderMd(md: string) {
   return md.split(/\n{2,}/).map((block, i) => {
     const t = block.trim();
     if (!t) return null;
     if (t === '---') return <hr key={i} style={{ border: 'none', borderTop: '1px solid var(--avorio-dim)', margin: '18px 0' }} />;
+
+    // inline image: ![caption](url)
+    const img = t.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (img) return (
+      <figure key={i} style={{ margin: '20px 0' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={img[2]} alt={img[1]} style={{ width: '100%', borderRadius: 10, display: 'block' }} />
+        {img[1] && (
+          <figcaption style={{ fontSize: 12, color: 'var(--ardesia)', fontFamily: 'var(--font-sans)', fontStyle: 'italic', marginTop: 6, lineHeight: 1.45 }}>
+            {img[1]}
+          </figcaption>
+        )}
+      </figure>
+    );
+
     const h1 = t.match(/^#\s+(.*)/);
     if (h1) return (
       <h2 key={i} style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: 20, color: 'var(--ciocco)', margin: '22px 0 6px' }}>
@@ -290,24 +305,7 @@ export function IssueView({ issue, shorts, deepRead, discoveryPlaces, discoveryE
         transition: 'max-height 350ms ease, opacity 250ms ease',
       }}>
         <div style={{ padding: '24px 20px 8px' }}>
-          {(() => {
-            const blocks = issue.lead_body_md.split(/\n{2,}/);
-            const first = blocks.slice(0, 1);
-            const rest = blocks.slice(1);
-            return (
-              <>
-                {renderMd(first.join('\n\n'))}
-                {issue.lead_cover_url && (
-                  <img
-                    src={issue.lead_cover_url}
-                    alt={issue.lead_title}
-                    style={{ width: '100%', borderRadius: 10, margin: '16px 0', display: 'block' }}
-                  />
-                )}
-                {rest.length > 0 && renderMd(rest.join('\n\n'))}
-              </>
-            );
-          })()}
+          {renderMd(issue.lead_body_md)}
         </div>
       </div>
 

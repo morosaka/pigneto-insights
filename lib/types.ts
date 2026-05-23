@@ -97,6 +97,7 @@ export interface EvergreenItem {
   featured_until: string | null;       // ISO date
   // Rich fields (migration 004)
   cover_url: string | null;
+  lead_cover_url: string | null;
 }
 
 // ────────────────────────────────────────────────────────────
