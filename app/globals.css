@@ -29,10 +29,21 @@ html, body { height: 100%; overflow: hidden; }
 
 body {
   font-family: var(--font-sans);
-  /* Avorio — visible in safe areas (status bar + home indicator) */
-  background: var(--avorio);
+  background: white;
   color: var(--ciocco);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Status bar mask — prevents content scrolling behind the iOS status bar.
+   Sits above all content (z-index 9999) and matches the bottom nav color (white). */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: white;
+  z-index: 9999;
+  pointer-events: none;
 }
 
 .no-select { user-select: none; -webkit-user-select: none; }
