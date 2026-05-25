@@ -22,7 +22,7 @@ export function BottomNav({ activeTab, onTabChange }: Props) {
           onClick={() => onTabChange(i)}
           className={`nav-btn${i === activeTab ? ' active' : ''}`}
         >
-          <span className="nav-glyph" style={{ fontSize: tab.glyphSize }}>{tab.glyph}</span>
+          <span className="nav-glyph" style={{ fontSize: tab.glyphSize, transform: 'translateY(-3px)' }}>{tab.glyph}</span>
           <span className="nav-label">{tab.label}</span>
         </button>
       ))}
