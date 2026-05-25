@@ -27,24 +27,26 @@ const CATEGORY_ORDER = [
 function PlaceRow({ place, onTap }: { place: Place; onTap: () => void }) {
   return (
     <button onClick={onTap} className="place-row">
-      <div className="place-thumb">
-        {place.cover_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={place.cover_url} alt={place.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        ) : (
-          <div style={{ width: '100%', height: '100%', background: `linear-gradient(160deg, var(--ardesia), var(--oliva))` }} />
-        )}
-      </div>
-      <div className="place-body">
-        <div className="t-label" style={{ color: catColor(place.category), marginBottom: 4, textAlign: 'right', lineHeight: 1.4 }}>
-          {place.category}{place.hours ? ` · ${place.hours}` : ''}
+      <div style={{ display: 'flex', alignItems: 'stretch', width: '100%' }}>
+        <div className="place-thumb">
+          {place.cover_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={place.cover_url} alt={place.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <div style={{ width: '100%', height: '100%', background: `linear-gradient(160deg, var(--ardesia), var(--oliva))` }} />
+          )}
         </div>
-        <div className="t-heading" style={{ marginBottom: 4 }}>{place.name}</div>
-        <div className="t-meta">
-          {place.walk_minutes ? `${place.walk_minutes} min walk` : (place.address ?? '')}
+        <div className="place-body">
+          <div className="t-label" style={{ color: catColor(place.category), marginBottom: 2, textAlign: 'left' }}>
+            {place.category}{place.hours ? ` · ${place.hours}` : ''}
+          </div>
+          <div className="t-meta" style={{ textAlign: 'left' }}>
+            {place.walk_minutes ? `${place.walk_minutes} min walk` : (place.address ?? '')}
+          </div>
         </div>
+        <div className="place-arrow">›</div>
       </div>
-      <div className="place-arrow">›</div>
+      <div className="t-heading" style={{ textAlign: 'left', marginTop: 8 }}>{place.name}</div>
     </button>
   );
 }
