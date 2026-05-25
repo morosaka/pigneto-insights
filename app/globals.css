@@ -333,6 +333,8 @@ body {
   display: flex;
   align-items: stretch;
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: 10px;
+  padding-right: 10px;
   z-index: 60;
 }
 
@@ -365,6 +367,8 @@ body {
   letter-spacing: 0.1em;
   font-weight: 500;
   transition: color 0.2s;
+  position: relative;
+  top: -5px;
 }
 
 .nav-btn .nav-glyph,

@@ -2,10 +2,10 @@
 
 // ︎ (VS15) forces text presentation on iOS Safari, preventing emoji color override
 const TABS = [
-  { glyph: '⚜︎', label: 'Home' },
-  { glyph: '♨︎', label: 'Eat & Drink' },
-  { glyph: '✛︎', label: 'Essentials' },
-  { glyph: '✶︎', label: 'Discover' },
+  { glyph: '⚜︎', label: 'Home',       glyphSize: 33 },
+  { glyph: '♨︎', label: 'Eat & Drink', glyphSize: 24 },
+  { glyph: '✛︎', label: 'Essentials',  glyphSize: 27 },
+  { glyph: '✶︎', label: 'Discover',    glyphSize: 30 },
 ];
 
 interface Props {
@@ -22,7 +22,7 @@ export function BottomNav({ activeTab, onTabChange }: Props) {
           onClick={() => onTabChange(i)}
           className={`nav-btn${i === activeTab ? ' active' : ''}`}
         >
-          <span className="nav-glyph">{tab.glyph}</span>
+          <span className="nav-glyph" style={{ fontSize: tab.glyphSize }}>{tab.glyph}</span>
           <span className="nav-label">{tab.label}</span>
         </button>
       ))}
