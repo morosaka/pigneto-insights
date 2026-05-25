@@ -36,13 +36,13 @@ function PlaceRow({ place, onTap }: { place: Place; onTap: () => void }) {
           )}
         </div>
         <div className="place-body">
-          <div className="t-label" style={{ color: catColor(place.category), marginBottom: 4, textAlign: 'right' }}>
+          <div className="t-label" style={{ color: catColor(place.category), marginBottom: 2, textAlign: 'right' }}>
             {place.category}{price ? ` · ${price}` : ''}
           </div>
-          <div className="t-heading" style={{ marginBottom: 4, textAlign: 'left' }}>{place.name}</div>
-          <div className="t-meta" style={{ textAlign: 'right' }}>
+          <div className="t-meta" style={{ textAlign: 'right', marginBottom: 6 }}>
             {place.walk_minutes ? `${place.walk_minutes} min walk` : (place.address ?? '')}
           </div>
+          <div className="t-heading" style={{ textAlign: 'left' }}>{place.name}</div>
         </div>
         <div className="place-arrow">›</div>
       </div>
