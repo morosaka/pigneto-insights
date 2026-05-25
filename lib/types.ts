@@ -36,6 +36,13 @@ export interface Place {
   menu_url: string | null;
   delivery_url: string | null;
   tags: string[];
+  // Multi-source ratings (migration 005)
+  thefork_rating: number | null;
+  thefork_review_count: number | null;
+  tripadvisor_rating: number | null;
+  tripadvisor_review_count: number | null;
+  rating_avg: number | null;
+  rating_sources: string[];
 }
 
 // ────────────────────────────────────────────────────────────
