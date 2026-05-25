@@ -1,10 +1,11 @@
 'use client';
 
+// ︎ (VS15) forces text presentation on iOS Safari, preventing emoji color override
 const TABS = [
-  { glyph: '⚜', label: 'Home' },
-  { glyph: '♨', label: 'Eat & Drink' },
-  { glyph: '✛', label: 'Essentials' },
-  { glyph: '✶', label: 'Discover' },
+  { glyph: '⚜︎', label: 'Home' },
+  { glyph: '♨︎', label: 'Eat & Drink' },
+  { glyph: '✛︎', label: 'Essentials' },
+  { glyph: '✶︎', label: 'Discover' },
 ];
 
 interface Props {
