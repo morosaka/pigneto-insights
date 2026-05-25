@@ -94,7 +94,7 @@ body {
 
 .t-label {
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.09em;
@@ -110,7 +110,7 @@ body {
 .t-meta {
   font-family: var(--font-sans);
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.2;
   color: var(--avorio-dk);
 }
 
@@ -118,7 +118,7 @@ body {
 
 .place-row {
   display: flex;
-  align-items: stretch;
+  flex-direction: column;
   width: 100%;
   padding: 12px 0;
   border-bottom: 1px solid var(--avorio-dim);
@@ -137,7 +137,7 @@ body {
   border-radius: 10px;
   flex-shrink: 0;
   overflow: hidden;
-  margin-right: 28px;
+  margin-right: 20px;
   background: var(--avorio-dim);
 }
 
