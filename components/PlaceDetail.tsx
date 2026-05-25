@@ -131,13 +131,6 @@ export function PlaceDetail({ place, onClose }: Props) {
           </p>
         )}
 
-        {/* practical description */}
-        {place.description && (
-          <p style={{ fontSize: 14, lineHeight: 1.45, color: 'var(--ciocco)', fontFamily: 'var(--font-sans)', margin: 0 }}>
-            {place.description}
-          </p>
-        )}
-
         {/* rating */}
         {place.google_rating != null && (
           <StarRating rating={place.google_rating} count={place.google_review_count ?? null} />
