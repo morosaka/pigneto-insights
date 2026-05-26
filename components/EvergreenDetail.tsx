@@ -80,10 +80,10 @@ export function EvergreenDetail({ item, onClose }: Props) {
         background: 'linear-gradient(162deg, var(--ardesia) 0%, var(--oliva) 100%)',
         flexShrink: 0,
       }}>
-        {item.cover_url && (
+        {(item.lead_cover_url || item.cover_url) && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={item.cover_url}
+            src={item.lead_cover_url ?? item.cover_url!}
             alt={item.title}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
           />
