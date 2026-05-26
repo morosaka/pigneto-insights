@@ -186,14 +186,29 @@ export function DiscoverTab({ ongoingNews, recentStories, evergreenItems }: Prop
           {filteredEvergreen.map(e => (
             <button key={e.id} onClick={() => setSelectedEvergreen(e)}
               style={{
+                position: 'relative', overflow: 'hidden',
                 width: '100%', textAlign: 'left', background: 'none', border: 'none',
                 padding: '12px 0', borderBottom: '1px solid var(--avorio-dim)',
                 cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
               } as React.CSSProperties}>
-              <div className="t-heading" style={{ marginBottom: 4 }}>{e.title}</div>
-              {e.body_md && (
-                <div className="t-meta">{e.body_md.slice(0, 120)}…</div>
+              {e.lead_cover_url && (
+                <div style={{
+                  position: 'absolute', right: 0, top: 0, bottom: 0, width: '40%',
+                  backgroundImage: `url(${e.lead_cover_url})`,
+                  backgroundSize: 'cover', backgroundPosition: 'center',
+                  opacity: 0.18,
+                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 100%)',
+                  maskImage: 'linear-gradient(to right, transparent 0%, black 100%)',
+                }} />
               )}
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div className="t-heading" style={{ marginBottom: 4 }}>{e.title}</div>
+                {(e.tagline || e.editorial_intro_md) && (
+                  <div className="t-meta">
+                    {e.tagline ?? `${e.editorial_intro_md!.slice(0, 120)}…`}
+                  </div>
+                )}
+              </div>
             </button>
           ))}
         </div>
