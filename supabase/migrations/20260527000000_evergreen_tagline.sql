@@ -1,0 +1,1 @@
+ALTER TABLE evergreen ADD COLUMN IF NOT EXISTS tagline TEXT;
