@@ -100,6 +100,7 @@ export interface EvergreenItem {
   published_week: string | null;
   // Editorial / Discovery fields (migration 001)
   editorial_intro_md: string | null;
+  tagline: string | null;
   featured_in_issue_id: string | null;
   featured_until: string | null;       // ISO date
   // Rich fields (migration 004)
