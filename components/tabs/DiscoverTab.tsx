@@ -205,7 +205,7 @@ export function DiscoverTab({ ongoingNews, recentStories, evergreenItems }: Prop
                 <div className="t-heading" style={{ marginBottom: 4 }}>{e.title}</div>
                 {(e.tagline || e.editorial_intro_md) && (
                   <div className="t-meta">
-                    {e.tagline ?? `${e.editorial_intro_md!.slice(0, 120)}…`}
+                    {e.tagline ?? (e.editorial_intro_md ? `${e.editorial_intro_md.slice(0, 120)}…` : null)}
                   </div>
                 )}
               </div>
