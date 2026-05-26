@@ -119,7 +119,7 @@ export function EvergreenDetail({ item, onClose }: Props) {
       </div>
 
       {/* ── Content ──────────────────────────────────────── */}
-      <div style={{ padding: '24px 20px 56px' }}>
+      <div style={{ padding: '24px 20px calc(66px + env(safe-area-inset-bottom, 0px) + 24px)' }}>
 
         {/* editorial intro */}
         {item.editorial_intro_md && (
