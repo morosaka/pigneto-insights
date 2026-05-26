@@ -105,6 +105,8 @@ export interface EvergreenItem {
   // Rich fields (migration 004)
   cover_url: string | null;
   lead_cover_url: string | null;
+  // Practical info (migration 006)
+  footnote_md: string | null;
 }
 
 // ────────────────────────────────────────────────────────────

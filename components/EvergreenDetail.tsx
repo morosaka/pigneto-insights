@@ -142,6 +142,28 @@ export function EvergreenDetail({ item, onClose }: Props) {
               Content coming soon.
             </p>
           )}
+
+        {/* footnote — practical info (dates, booking, links) */}
+        {item.footnote_md && (
+          <p
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: item.footnote_md
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>'),
+            }}
+            style={{
+              marginTop: 32,
+              paddingTop: 16,
+              borderTop: '1px solid var(--avorio-dim)',
+              fontSize: 13,
+              lineHeight: 1.55,
+              color: 'var(--ardesia)',
+              fontFamily: 'var(--font-sans)',
+              fontStyle: 'italic',
+            }}
+          />
+        )}
       </div>
     </div>
   );
