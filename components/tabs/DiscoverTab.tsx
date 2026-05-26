@@ -196,7 +196,7 @@ export function DiscoverTab({ ongoingNews, recentStories, evergreenItems }: Prop
                   position: 'absolute', right: 0, top: 0, bottom: 0, width: '40%',
                   backgroundImage: `url(${e.lead_cover_url})`,
                   backgroundSize: 'cover', backgroundPosition: 'center',
-                  opacity: 0.18,
+                  opacity: 0.30,
                   WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 100%)',
                   maskImage: 'linear-gradient(to right, transparent 0%, black 100%)',
                 }} />
