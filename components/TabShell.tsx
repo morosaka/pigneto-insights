@@ -13,38 +13,25 @@ interface Props {
 export function TabShell({ tabs, activeTab, onTabChange }: Props) {
   return (
     <div style={{ position: 'absolute', inset: 0 }}>
-      <div
-        style={{
-          position: 'absolute',
-          top: 0, left: 0, right: 0,
-          bottom: NAV_H,
-          overflow: 'hidden',
-        }}
-      >
+      {/* Each tab is stacked absolutely — no transform on any ancestor,
+          so position:fixed overlays (EvergreenDetail, PlaceDetail, etc.)
+          always position relative to the real viewport. */}
+      {tabs.map((tab, i) => (
         <div
+          key={i}
           style={{
-            display: 'flex',
-            width: `${tabs.length * 100}%`,
-            height: '100%',
-            transform: `translateX(-${(activeTab / tabs.length) * 100}%)`,
-            transition: 'transform 0.3s ease',
+            position: 'absolute',
+            top: 0, left: 0, right: 0,
+            bottom: NAV_H,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            visibility: i === activeTab ? 'visible' : 'hidden',
+            pointerEvents: i === activeTab ? 'auto' : 'none',
           }}
         >
-          {tabs.map((tab, i) => (
-            <div
-              key={i}
-              style={{
-                width: `${100 / tabs.length}%`,
-                flexShrink: 0,
-                overflowY: 'auto',
-                overflowX: 'hidden',
-              }}
-            >
-              {tab}
-            </div>
-          ))}
+          {tab}
         </div>
-      </div>
+      ))}
 
       <BottomNav activeTab={activeTab} onTabChange={onTabChange} />
     </div>
