@@ -187,20 +187,13 @@ export function DiscoverTab({ ongoingNews, recentStories, evergreenItems }: Prop
             <button key={e.id} onClick={() => setSelectedEvergreen(e)}
               style={{
                 position: 'relative', overflow: 'hidden',
-                width: '100%', textAlign: 'left', background: 'none', border: 'none',
+                width: '100%', textAlign: 'left', border: 'none',
                 padding: '12px 0', borderBottom: '1px solid var(--avorio-dim)',
                 cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                background: e.accent_color
+                  ? `linear-gradient(to right, var(--avorio) 0%, ${e.accent_color}22 55%, ${e.accent_color}66 100%)`
+                  : 'var(--avorio)',
               } as React.CSSProperties}>
-              {e.lead_cover_url && (
-                <div style={{
-                  position: 'absolute', right: 0, top: 0, bottom: 0, width: '40%',
-                  backgroundImage: `url(${e.lead_cover_url})`,
-                  backgroundSize: '400%', backgroundPosition: 'top right',
-                  opacity: 0.85,
-                  WebkitMaskImage: 'linear-gradient(45deg, transparent 0%, rgba(0,0,0,0.5) 40%, black 75%, black 100%)',
-                  maskImage: 'linear-gradient(45deg, transparent 0%, rgba(0,0,0,0.5) 40%, black 75%, black 100%)',
-                }} />
-              )}
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div className="t-heading" style={{ marginBottom: 4 }}>{e.title}</div>
                 {(e.tagline || e.editorial_intro_md) && (
