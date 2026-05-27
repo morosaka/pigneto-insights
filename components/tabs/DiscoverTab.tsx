@@ -8,17 +8,22 @@ import { LibraryEntryPoint } from '@/components/LibraryEntryPoint';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
-const EVERGREEN_PILLS = [
-  { label: 'neighbourhood history', color: 'var(--oliva)' },
-  { label: 'Rome transport',        color: 'var(--ardesia)' },
-  { label: 'Roman cuisine',         color: 'var(--pompei)' },
-  { label: 'walking routes',        color: 'var(--oliva)' },
-  { label: 'historic markets',      color: 'var(--ardesia)' },
-  { label: 'street art',            color: 'var(--pompei)' },
-  { label: 'parks & gardens',       color: 'var(--oliva)' },
-  { label: 'free museums',          color: 'var(--ardesia)' },
-  { label: 'local food',            color: 'var(--pompei)' },
-];
+function tagHue(tag: string): number {
+  let hash = 0;
+  for (let i = 0; i < tag.length; i++) {
+    hash = (tag.charCodeAt(i) + ((hash << 5) - hash)) | 0;
+  }
+  return Math.abs(hash) % 360;
+}
+
+function tagColor(tag: string): string {
+  return `hsl(${tagHue(tag)}, 32%, 50%)`;
+}
+
+function tagGradient(tag: string): string {
+  const h = tagHue(tag);
+  return `linear-gradient(to right, var(--avorio) 0%, hsla(${h}, 32%, 50%, 0.12) 55%, hsla(${h}, 32%, 50%, 0.35) 100%)`;
+}
 
 function newsColor(category: string | null): string {
   const map: Record<string, string> = { food: 'var(--terra)', sport: 'var(--oliva)', culture: 'var(--ardesia)' };
@@ -127,6 +132,8 @@ export function DiscoverTab({ ongoingNews, recentStories, evergreenItems }: Prop
     });
   }
 
+  const allTags = Array.from(new Set(evergreenItems.flatMap(e => e.tags))).sort();
+
   const filteredEvergreen = selectedTags.size === 0
     ? evergreenItems
     : evergreenItems.filter(e => e.tags.some(t => selectedTags.has(t)));
@@ -167,16 +174,17 @@ export function DiscoverTab({ ongoingNews, recentStories, evergreenItems }: Prop
       {/* ── Rome Evergreen ─────────────────────────────────────── */}
       <SectionHeader label="Rome Evergreen" color="var(--ardesia)" />
       <div className="chip-wrap">
-        {EVERGREEN_PILLS.map(pill => {
-          const active = selectedTags.has(pill.label);
+        {allTags.map(tag => {
+          const active = selectedTags.has(tag);
+          const color = tagColor(tag);
           return (
-            <button key={pill.label} onClick={() => toggleTag(pill.label)}
+            <button key={tag} onClick={() => toggleTag(tag)}
               className="filter-chip"
               style={active
-                ? { background: pill.color, borderColor: pill.color, color: 'white' }
-                : { border: `1px solid ${pill.color}`, color: pill.color }
+                ? { background: color, borderColor: color, color: 'white' }
+                : { border: `1px solid ${color}`, color }
               }>
-              {pill.label}
+              {tag}
             </button>
           );
         })}
@@ -190,9 +198,7 @@ export function DiscoverTab({ ongoingNews, recentStories, evergreenItems }: Prop
                 width: '100%', textAlign: 'left', border: 'none',
                 padding: '12px 0', borderBottom: '1px solid var(--avorio-dim)',
                 cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-                background: e.accent_color
-                  ? `linear-gradient(to right, var(--avorio) 0%, ${e.accent_color}22 55%, ${e.accent_color}66 100%)`
-                  : 'var(--avorio)',
+                background: e.tags[0] ? tagGradient(e.tags[0]) : 'var(--avorio)',
               } as React.CSSProperties}>
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div className="t-heading" style={{ marginBottom: 4 }}>{e.title}</div>
