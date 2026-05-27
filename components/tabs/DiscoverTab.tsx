@@ -195,10 +195,10 @@ export function DiscoverTab({ ongoingNews, recentStories, evergreenItems }: Prop
                 <div style={{
                   position: 'absolute', right: 0, top: 0, bottom: 0, width: '40%',
                   backgroundImage: `url(${e.lead_cover_url})`,
-                  backgroundSize: 'cover', backgroundPosition: 'center',
-                  opacity: 0.60,
-                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 100%)',
-                  maskImage: 'linear-gradient(to right, transparent 0%, black 100%)',
+                  backgroundSize: '400%', backgroundPosition: 'top right',
+                  opacity: 0.85,
+                  WebkitMaskImage: 'linear-gradient(45deg, transparent 0%, rgba(0,0,0,0.5) 40%, black 75%, black 100%)',
+                  maskImage: 'linear-gradient(45deg, transparent 0%, rgba(0,0,0,0.5) 40%, black 75%, black 100%)',
                 }} />
               )}
               <div style={{ position: 'relative', zIndex: 1 }}>
