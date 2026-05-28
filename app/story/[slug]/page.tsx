@@ -12,7 +12,7 @@ export default async function StoryPage({ params }: Props) {
   if (!story) notFound();
 
   return (
-    <main style={{ height: '100vh', overflowY: 'auto', background: 'var(--avorio)' }}>
+    <main>
       <StoryDetailPage story={story} />
     </main>
   );

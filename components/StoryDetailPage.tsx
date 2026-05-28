@@ -98,7 +98,7 @@ export function StoryDetailPage({ story }: Props) {
   const readingTime = story.narration_time_min ?? story.reading_time_min;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--avorio)' }}>
+    <div className="overlay overlay--avorio">
       {/* ── Header ───────────────────────────────────────────── */}
       <div style={{
         background: 'linear-gradient(162deg, var(--ciocco) 0%, var(--pompei) 55%, hsl(20,50%,42%) 100%)',
