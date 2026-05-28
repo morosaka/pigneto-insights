@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getPastIssues, getAllStories } from '@/lib/api';
 import { LibraryPage } from '@/components/LibraryPage';
 
